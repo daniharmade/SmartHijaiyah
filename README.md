@@ -16,6 +16,21 @@ SmartHijaiyah adalah platform web interaktif berbasis Artificial Intelligence ya
   <img src="preview/belajar.png" width="800">
 </p>
 
+### 🎓 Halaman Dashboard
+<p align="center">
+  <img src="preview/dashboard.png" width="800">
+</p>
+
+### 🎓 Halaman Proses Belajar
+<p align="center">
+  <img src="preview/proses-belajar.png" width="800">
+</p>
+
+### 🎓 Halaman Input Proses Belajar
+<p align="center">
+  <img src="preview/input-nilai.png" width="800">
+</p>
+
 
 ## 🌟 Deskripsi Singkat
 
