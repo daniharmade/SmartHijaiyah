@@ -44,6 +44,7 @@
                     <a href="#tentang" class="hover:text-emerald-600 transition">Tentang</a>
                     <a href="#huruf" class="hover:text-emerald-600 transition">Daftar Huruf</a>
                     <a href="#cara-kerja" class="hover:text-emerald-600 transition">Cara Belajar</a>
+                    <a href="/developer" class="hover:text-emerald-600 transition">Tim Pengembang</a>
                 </div>
 
                 <!-- Action Button & Mobile Toggle -->
@@ -66,7 +67,7 @@
                 <a href="#tentang" class="block px-3 py-3 text-emerald-900 font-medium hover:bg-emerald-50 rounded-xl">Tentang</a>
                 <a href="#huruf" class="block px-3 py-3 text-emerald-900 font-medium hover:bg-emerald-50 rounded-xl">Daftar Huruf</a>
                 <a href="#cara-kerja" class="block px-3 py-3 text-emerald-900 font-medium hover:bg-emerald-50 rounded-xl">Cara Belajar</a>
-                <a href="#" class="block px-3 py-4 mt-2 text-center bg-emerald-600 text-white rounded-xl font-bold">Mulai Belajar</a>
+                <a href="/developer" class="block px-3 py-4 mt-2 text-center bg-emerald-600 text-white rounded-xl font-bold">Tim Pengembang</a>
             </div>
         </div>
     </nav>
@@ -376,11 +377,13 @@
             </div>
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 border-t border-emerald-900/50 text-center text-emerald-200/40 text-[10px] md:text-sm">
-            <p>&copy; 2024 SmartHijaiyah. Dibuat dengan penuh ❤️ untuk Inklusivitas Muslim.</p>
+            <p>&copy; <span id="year"></span> SmartHijaiyah. Dibuat dengan penuh ❤️ untuk Inklusivitas Muslim.</p>
         </div>
     </footer>
 
     <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+
         // Mobile Menu Toggle Logic
         const menuToggle = document.getElementById('menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');

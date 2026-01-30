@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tim Pengembang - SmartHijaiyah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .bg-islamic-pattern {
+            background-color: #f0fdf4;
+            background-image: url("https://www.transparenttextures.com/patterns/arabesque.png");
+        }
+        .card-glow:hover {
+            box-shadow: 0 20px 40px -15px rgba(16, 185, 129, 0.2);
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-emerald-50/50 text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-emerald-100 py-4 px-6 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="/" class="text-emerald-700 hover:text-emerald-900 transition flex items-center font-medium text-sm">
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali
+                </a>
+                <div class="h-6 w-px bg-emerald-100 hidden sm:block"></div>
+                <span class="text-lg font-bold text-emerald-800">Smart<span class="text-emerald-500">Hijaiyah</span></span>
+            </div>
+            <div class="flex items-center space-x-2 bg-emerald-100 px-4 py-1.5 rounded-full">
+                <i class="fas fa-code text-emerald-600 text-xs"></i>
+                <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-widest">Tim Pengembang</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow bg-islamic-pattern py-16 px-6">
+        <div class="max-w-5xl mx-auto">
+            
+            <div class="text-center mb-16">
+                <h1 class="text-3xl md:text-4xl font-bold text-emerald-900 mb-4">Di Balik Layar SmartHijaiyah</h1>
+                <p class="text-gray-600 max-w-2xl mx-auto">Dedikasi kami untuk menciptakan teknologi inklusif yang membantu mempermudah pembelajaran huruf Hijaiyah bagi semua kalangan melalui inovasi AI.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-10">
+
+                
+                <!-- Supervisor Card (Lecturer) -->
+                <div class="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-emerald-900/5 border border-white card-glow transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-emerald-800 text-white px-6 py-2 rounded-bl-3xl font-bold text-xs">Dosen Pembimbing</div>
+                    
+                    <div class="flex flex-col items-center">
+                        <div class="relative mb-6">
+                            <div class="absolute inset-0 bg-emerald-100 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                           <img src="{{ url_for('static', filename='assets/ibu-rice.jpg') }}" 
+                                    class="w-32 h-32 rounded-full border-4 border-emerald-50 relative z-10" 
+                                    alt="Foto Dosen">
+                        </div>
+                        
+                        <h2 class="text-xl font-bold text-emerald-900 mb-1">Dr. Rice Novita, S.Kom., M.Kom</h2>
+                        <p class="text-emerald-800 font-medium text-sm mb-4">Dosen Program Studi Sistem Informasi</p>
+                        
+                        <p class="text-gray-500 text-center text-sm leading-relaxed mb-8">
+                            Memberikan bimbingan teknis mengenai akurasi algoritma Random Forest dan memastikan validitas materi bahasa isyarat Hijaiyah.
+                        </p>
+
+                        <div class="flex space-x-4">
+                            <a href="https://sif.uin-suska.ac.id/rice-novita/" class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-800 hover:bg-emerald-800 hover:text-white transition-colors">
+                                <i class="fas fa-university"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/in/rice-novita-64946748/" class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-800 hover:bg-emerald-800 hover:text-white transition-colors">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="mailto:rice.novita@uin-suska.ac.id" class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Developer Card (Student) -->
+                <div class="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-emerald-900/5 border border-white card-glow transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-emerald-600 text-white px-6 py-2 rounded-bl-3xl font-bold text-xs">Pengembang Utama</div>
+                    
+                    <div class="flex flex-col items-center">
+                        <div class="relative mb-6">
+                            <div class="absolute inset-0 bg-emerald-200 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                            <img src="{{ url_for('static', filename='assets/dani.png') }}" class="w-32 h-32 rounded-full border-4 border-emerald-50 relative z-10" alt="Foto Pengembang">
+                        </div>
+                        
+                        <h2 class="text-xl font-bold text-emerald-900 mb-1">Dani Harmade</h2>
+                        <p class="text-emerald-600 font-medium text-sm mb-4">Software Engineer</p>
+                        
+                        <p class="text-gray-500 text-center text-sm leading-relaxed mb-8">
+                            Bertanggung jawab atas arsitektur sistem, integrasi model MediaPipe, dan pengembangan antarmuka pengguna SmartHijaiyah.
+                        </p>
+
+                        <div class="flex space-x-4">
+                            <a href="https://github.com/daniharmade" class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/in/daniharmade/" class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="mailto:daniharmade@gmail.com" class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Technology Stack -->
+            <div class="mt-20 pt-10 border-t border-emerald-100">
+                <h3 class="text-center text-xs font-bold text-emerald-800 uppercase tracking-[0.3em] mb-8">Teknologi yang Digunakan</h3>
+                <div class="flex flex-wrap justify-center gap-8 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                    <div class="flex items-center space-x-2">
+                        <i class="fab fa-python text-2xl"></i>
+                        <span class="font-bold">Python</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-fire text-2xl"></i>
+                        <span class="font-bold">Flask</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-brain text-2xl"></i>
+                        <span class="font-bold">MediaPipe</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fab fa-html5 text-2xl"></i>
+                        <span class="font-bold">Tailwind CSS</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white py-8 border-t border-emerald-50 text-center">
+        <p class="text-gray-400 text-xs font-medium uppercase tracking-widest">&copy; 2026 SmartHijaiyah Project - Collaborative Development</p>
+    </footer>
+
+</body>
+</html>

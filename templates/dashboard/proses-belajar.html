@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proses Belajar - SmartHijaiyah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      .active-link {
+        background-color: #10b981;
+        color: white;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #10b981;
+        border-radius: 10px;
+      }
+
+      /* Modal Animation */
+      .modal-hidden {
+        opacity: 0;
+        pointer-events: none;
+        visibility: hidden;
+      }
+      .modal-container {
+        transition: all 0.3s ease-in-out;
+      }
+      .modal-hidden .modal-container {
+        transform: scale(0.95) translateY(-20px);
+      }
+    </style>
+  </head>
+  <body class="bg-emerald-50/50 text-gray-800 overflow-hidden">
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <aside
+        class="w-64 bg-white border-r border-emerald-100 flex flex-col hidden md:flex"
+      >
+        <div class="p-6">
+          <div class="flex items-center space-x-2">
+            <div class="bg-emerald-600 p-2 rounded-lg text-white">
+              <i class="fas fa-hand-holding-heart"></i>
+            </div>
+            <span class="text-xl font-bold text-emerald-800 tracking-tight"
+              >Smart<span class="text-emerald-500">Hijaiyah</span></span
+            >
+          </div>
+        </div>
+
+        <nav class="mt-6 px-4 flex-grow space-y-2">
+          <a
+            href="/dashboard"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 text-gray-600 hover:bg-emerald-50"
+          >
+            <i class="fas fa-th-large"></i>
+            <span class="font-medium">Dashboard</span>
+          </a>
+          <a
+            href="/data-guru"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 text-gray-600 hover:bg-emerald-50"
+          >
+            <i class="fas fa-chalkboard-teacher"></i>
+            <span class="font-medium">Data Guru</span>
+          </a>
+          <a
+            href="/data-siswa"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 text-gray-600 hover:bg-emerald-50"
+          >
+            <i class="fas fa-user-graduate"></i>
+            <span class="font-medium">Data Siswa</span>
+          </a>
+          <a
+            href="/proses-belajar"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 active-link"
+          >
+            <i class="fas fa-book-reader"></i>
+            <span class="font-medium">Proses Belajar</span>
+          </a>
+        </nav>
+
+        <div class="p-4 border-t border-emerald-50">
+          <a
+            href="/"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition"
+          >
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="font-medium">Kembali</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-grow flex flex-col h-full overflow-hidden">
+        <header
+          class="h-20 bg-white border-b border-emerald-100 flex items-center justify-between px-8 shrink-0"
+        >
+          <h2 class="text-xl font-bold text-emerald-900">Log Proses Belajar</h2>
+          <div class="flex items-center space-x-6"></div>
+        </header>
+
+        <div class="p-8 overflow-y-auto custom-scrollbar flex-grow">
+          <div class="space-y-6">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="text-gray-500 text-sm">
+                  Monitoring hasil penilaian belajar harian siswa
+                </p>
+              </div>
+              <button
+                onclick="toggleModal('modal-tambah-proses')"
+                class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-emerald-200 transition flex items-center"
+              >
+                <i class="fas fa-plus mr-2"></i> Input Nilai Baru
+              </button>
+            </div>
+            <div
+              class="bg-white rounded-[2rem] border border-emerald-50 shadow-sm overflow-hidden"
+            >
+              <table class="w-full text-left min-w-[800px]">
+                <thead class="bg-emerald-50/50">
+                  <tr>
+                    <th
+                      class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider"
+                    >
+                      Nama Siswa
+                    </th>
+                    <th
+                      class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider"
+                    >
+                      Guru Pengampu
+                    </th>
+                    <th
+                      class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider"
+                    >
+                      Nilai
+                    </th>
+                    <th
+                      class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider"
+                    >
+                      Tanggal
+                    </th>
+                    <th
+                      class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider text-right"
+                    >
+                      Aksi
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for p in proses %}
+                  <tr class="hover:bg-emerald-50/30 transition">
+                    <td class="px-6 py-4">{{ p.nama_siswa }}</td>
+                    <td class="px-6 py-4">{{ p.nama_guru }}</td>
+                    <td class="px-6 py-4 font-bold text-emerald-600">
+                      {{ p.nilai }}
+                    </td>
+                    <td class="px-6 py-4 text-xs text-gray-500">
+                      {{ p.tanggal }}
+                    </td>
+                    <td class="px-6 py-4 text-right space-x-2">
+                      <!-- Tombol Detail -->
+                      <button
+                        onclick="openDetailModal(this)"
+                        data-siswa="{{ p.nama_siswa }}"
+                        data-guru="{{ p.nama_guru }}"
+                        data-nilai="{{ p.nilai }}"
+                        data-tanggal="{{ p.tanggal }}"
+                        data-catatan="{{ p.catatan }}"
+                        class="text-gray-400 hover:text-emerald-600 transition"
+                      >
+                        <i class="fas fa-info-circle"></i> Detail
+                      </button>
+
+                      <!-- Tombol Edit -->
+                      <button
+                        onclick="openEditModal(this)"
+                        data-id="{{ p.id }}"
+                        data-siswa-id="{{ p.siswa_id }}"
+                        data-guru-id="{{ p.guru_id }}"
+                        data-nilai="{{ p.nilai }}"
+                        data-tanggal="{{ p.tanggal }}"
+                        data-catatan="{{ p.catatan }}"
+                        class="text-blue-500 hover:text-blue-700 transition"
+                      >
+                        <i class="fas fa-edit"></i> Edit
+                      </button>
+
+                      <!-- Tombol Hapus -->
+                      <a
+                        href="/hapus-proses/{{ p.id }}"
+                        class="text-red-500 hover:text-red-700"
+                      >
+                        <i class="fas fa-trash"></i> Delete
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- MODAL: DETAIL CATATAN BELAJAR -->
+    <div
+      id="modal-detail-proses"
+      class="fixed inset-0 z-[70] flex items-center justify-center p-4 transition-all duration-300 modal-hidden"
+    >
+      <!-- Backdrop -->
+      <div
+        onclick="toggleModal('modal-detail-proses')"
+        class="absolute inset-0 bg-emerald-900/40 backdrop-blur-sm"
+      ></div>
+
+      <!-- Modal Container -->
+      <div
+        class="modal-container relative bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border border-emerald-50 max-h-[90vh] flex flex-col"
+      >
+        <!-- Konten Scrollable -->
+        <div class="p-8 overflow-y-auto flex-1 space-y-6">
+          <!-- Header -->
+          <div
+            class="flex justify-between items-center mb-6 sticky top-0 bg-white z-10"
+          >
+            <h3
+              class="text-xl font-bold text-emerald-900 text-center flex-grow ml-8"
+            >
+              Detail Laporan
+            </h3>
+            <button
+              onclick="toggleModal('modal-detail-proses')"
+              class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <!-- Skor Badge -->
+          <div
+            class="flex items-center justify-center p-4 bg-emerald-50 rounded-2xl border border-emerald-100"
+          >
+            <div class="text-center">
+              <p
+                class="text-xs font-bold text-emerald-700 uppercase tracking-widest mb-1"
+              >
+                Skor Penilaian
+              </p>
+              <p class="text-3xl font-black text-emerald-600">
+                <span id="detail-nilai">0</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Participant Info -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 rounded-2xl border border-gray-100">
+              <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">
+                Nama Siswa
+              </p>
+              <p class="text-sm font-bold text-gray-900" id="detail-siswa">-</p>
+            </div>
+            <div class="p-4 rounded-2xl border border-gray-100">
+              <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">
+                Guru Pengampu
+              </p>
+              <p class="text-sm font-bold text-gray-900" id="detail-guru">-</p>
+            </div>
+          </div>
+
+          <!-- Catatan -->
+          <div class="space-y-2">
+            <p
+              class="text-xs font-bold text-emerald-800 uppercase tracking-widest"
+            >
+              Catatan Perkembangan
+            </p>
+            <div
+              id="detail-catatan"
+              class="p-5 bg-emerald-50/30 rounded-2xl border border-emerald-50 italic text-sm text-gray-700 leading-relaxed max-h-60 overflow-y-auto"
+            >
+              Tidak ada catatan.
+            </div>
+          </div>
+
+          <!-- Tanggal -->
+          <div class="text-center pt-2">
+            <p class="text-[10px] text-gray-400" id="detail-tanggal">-</p>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-6 border-t border-emerald-50 flex-shrink-0">
+          <button
+            onclick="toggleModal('modal-detail-proses')"
+            class="w-full py-4 rounded-2xl font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition"
+          >
+            Tutup Detail
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: EDIT PROSES BELAJAR -->
+    <div
+      id="modal-edit-proses"
+      class="fixed inset-0 z-[75] flex items-center justify-center p-4 transition-all duration-300 modal-hidden"
+    >
+      <!-- Backdrop -->
+      <div
+        onclick="toggleModal('modal-edit-proses')"
+        class="absolute inset-0 bg-emerald-900/40 backdrop-blur-sm"
+      ></div>
+
+      <!-- Modal Container -->
+      <div
+        class="modal-container relative bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-emerald-50"
+      >
+        <div class="p-8">
+          <!-- Header -->
+          <div class="flex justify-between items-center mb-8">
+            <div>
+              <h3 class="text-xl font-bold text-emerald-900">
+                Edit Hasil Belajar
+              </h3>
+              <p class="text-xs text-gray-500">
+                Perbarui data performa belajar siswa
+              </p>
+            </div>
+            <button
+              onclick="toggleModal('modal-edit-proses')"
+              class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <form id="form-edit-siswa" method="POST" class="space-y-5">
+            <input type="hidden" name="id" id="edit-id" />
+
+            <div class="grid grid-cols-1 gap-5">
+              <!-- Pilih Siswa -->
+              <div>
+                <label
+                  class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                  >Nama Siswa</label
+                >
+                <select
+                  name="siswa_id"
+                  id="edit-siswa"
+                  required
+                  class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 text-sm"
+                >
+                  <option value="">-- Pilih Siswa --</option>
+                  {% for s in siswa %}
+                  <option value="{{ s.id }}">{{ s.nama }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Pilih Guru -->
+              <div>
+                <label
+                  class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                  >Guru Pengampu</label
+                >
+                <select
+                  name="guru_id"
+                  id="edit-guru"
+                  required
+                  class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 text-sm"
+                >
+                  <option value="">-- Pilih Guru --</option>
+                  {% for g in guru %}
+                  <option value="{{ g.id }}">{{ g.nama }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <!-- Nilai -->
+                <div>
+                  <label
+                    class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                    >Nilai (0-100)</label
+                  >
+                  <input
+                    type="number"
+                    name="nilai"
+                    id="edit-nilai"
+                    min="0"
+                    max="100"
+                    placeholder="Contoh: 90"
+                    class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm"
+                  />
+                </div>
+                <!-- Tanggal -->
+                <div>
+                  <label
+                    class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                    >Tanggal Belajar</label
+                  >
+                  <input
+                    type="date"
+                    name="tanggal"
+                    id="edit-tanggal"
+                    class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm"
+                  />
+                </div>
+              </div>
+
+              <!-- Catatan -->
+              <div>
+                <label
+                  class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                  >Catatan Perkembangan</label
+                >
+                <textarea
+                  name="catatan"
+                  id="edit-catatan"
+                  placeholder="Contoh: Sangat baik dalam fokus pandangan mata..."
+                  rows="3"
+                  class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex space-x-3 pt-6">
+              <button
+                type="button"
+                onclick="toggleModal('modal-edit-proses')"
+                class="flex-1 px-6 py-4 rounded-2xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 transition"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                class="flex-1 px-6 py-4 rounded-2xl font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition"
+              >
+                Perbarui Laporan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: TAMBAH PROSES BELAJAR -->
+    <div
+      id="modal-tambah-proses"
+      class="fixed inset-0 z-[60] flex items-center justify-center p-4 transition-all duration-300 modal-hidden"
+    >
+      <div
+        onclick="toggleModal('modal-tambah-proses')"
+        class="absolute inset-0 bg-emerald-900/40 backdrop-blur-sm"
+      ></div>
+      <div
+        class="modal-container relative bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-emerald-50"
+      >
+        <div class="p-8">
+          <div class="flex justify-between items-center mb-8">
+            <div>
+              <h3 class="text-xl font-bold text-emerald-900">
+                Input Hasil Belajar
+              </h3>
+              <p class="text-xs text-gray-500">
+                Catat performa belajar isyarat siswa
+              </p>
+            </div>
+            <button
+              onclick="toggleModal('modal-tambah-proses')"
+              class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <form action="/tambah-proses" method="POST" class="space-y-5">
+            <div class="grid grid-cols-1 gap-5">
+              <!-- Pilih Siswa -->
+              <div>
+                <label
+                  class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                  >Nama Siswa</label
+                >
+                <select
+                  name="siswa_id"
+                  required
+                  class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 text-sm"
+                >
+                  <option value="">-- Pilih Siswa --</option>
+                  {% for s in siswa %}
+                  <option value="{{ s.id }}">{{ s.nama }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Pilih Guru -->
+              <div>
+                <label
+                  class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                  >Guru Pengampu</label
+                >
+                <select
+                  name="guru_id"
+                  required
+                  class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 text-sm"
+                >
+                  <option value="">-- Pilih Guru --</option>
+                  {% for g in guru %}
+                  <option value="{{ g.id }}">{{ g.nama }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <!-- Nilai -->
+                <div>
+                  <label
+                    class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                    >Nilai (0-100)</label
+                  >
+                  <input
+                    type="number"
+                    name="nilai"
+                    min="0"
+                    max="100"
+                    placeholder="Contoh: 90"
+                    class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm"
+                  />
+                </div>
+                <!-- Tanggal -->
+                <div>
+                  <label
+                    class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                    >Tanggal Belajar</label
+                  >
+                  <input
+                    type="date"
+                    name="tanggal"
+                    class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm"
+                  />
+                </div>
+              </div>
+
+              <!-- Catatan -->
+              <div>
+                <label
+                  class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                  >Catatan Perkembangan</label
+                >
+                <textarea
+                  name="catatan"
+                  placeholder="Contoh: Sangat baik dalam fokus pandangan mata..."
+                  rows="3"
+                  class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex space-x-3 pt-6">
+              <button
+                type="button"
+                onclick="toggleModal('modal-tambah-proses')"
+                class="flex-1 px-6 py-4 rounded-2xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 transition"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                class="flex-1 px-6 py-4 rounded-2xl font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition"
+              >
+                Simpan Laporan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.toggle("modal-hidden");
+
+        if (!modal.classList.contains("modal-hidden")) {
+          document.body.style.overflow = "hidden";
+        } else {
+          document.body.style.overflow = "auto";
+        }
+      }
+
+      // Close modal on backdrop click
+      window.onclick = function (event) {
+        const detailModal = document.getElementById("modal-detail-proses");
+        const tambahModal = document.getElementById("modal-tambah-proses");
+
+        if (event.target === detailModal.firstElementChild) {
+          toggleModal("modal-detail-proses");
+        }
+        if (event.target === tambahModal.firstElementChild) {
+          toggleModal("modal-tambah-proses");
+        }
+      };
+
+      function openDetailModal(button) {
+        const siswa = button.getAttribute("data-siswa");
+        const guru = button.getAttribute("data-guru");
+        const nilai = button.getAttribute("data-nilai");
+        const tanggal = button.getAttribute("data-tanggal");
+        const catatan = button.getAttribute("data-catatan");
+
+        document.getElementById("detail-siswa").innerText = siswa;
+        document.getElementById("detail-guru").innerText = guru;
+        document.getElementById("detail-nilai").innerText = nilai;
+        document.getElementById("detail-tanggal").innerText =
+          "Tercatat pada: " + tanggal;
+        document.getElementById("detail-catatan").innerText =
+          catatan || "Tidak ada catatan.";
+
+        toggleModal("modal-detail-proses");
+      }
+
+      function openEditModal(button) {
+        const id = button.getAttribute("data-id");
+        const siswaId = button.getAttribute("data-siswa-id");
+        const guruId = button.getAttribute("data-guru-id");
+        const nilai = button.getAttribute("data-nilai");
+        const tanggal = button.getAttribute("data-tanggal");
+        const catatan = button.getAttribute("data-catatan");
+
+        document.getElementById("edit-id").value = id;
+        document.getElementById("edit-siswa").value = siswaId;
+        document.getElementById("edit-guru").value = guruId;
+        document.getElementById("edit-nilai").value = nilai;
+        document.getElementById("edit-tanggal").value = tanggal;
+        document.getElementById("edit-catatan").value = catatan;
+
+        const form = document.getElementById("form-edit-siswa");
+        form.action = "/edit-proses/" + id;
+
+        toggleModal("modal-edit-proses");
+      }
+    </script>
+  </body>
+</html>

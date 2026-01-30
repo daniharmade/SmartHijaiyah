@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Admin - SmartHijaiyah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      .active-link {
+        background-color: #10b981;
+        color: white;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      }
+      .bg-islamic-pattern {
+        background-image: url("https://www.transparenttextures.com/patterns/arabesque.png");
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #10b981;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body class="bg-emerald-50/50 text-gray-800 overflow-hidden">
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <aside
+        class="w-64 bg-white border-r border-emerald-100 flex flex-col hidden md:flex"
+      >
+        <div class="p-6">
+          <div class="flex items-center space-x-2">
+            <div class="bg-emerald-600 p-2 rounded-lg text-white">
+              <i class="fas fa-hand-holding-heart"></i>
+            </div>
+            <span class="text-xl font-bold text-emerald-800 tracking-tight"
+              >Smart<span class="text-emerald-500">Hijaiyah</span></span
+            >
+          </div>
+        </div>
+
+        <nav class="mt-6 px-4 flex-grow space-y-2">
+          <a
+            href="/dashboard"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 active-link"
+          >
+            <i class="fas fa-th-large"></i>
+            <span class="font-medium">Dashboard</span>
+          </a>
+          <a
+            href="/data-guru"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 text-gray-600 hover:bg-emerald-50"
+          >
+            <i class="fas fa-chalkboard-teacher"></i>
+            <span class="font-medium">Data Guru</span>
+          </a>
+          <a
+            href="/data-siswa"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 text-gray-600 hover:bg-emerald-50"
+          >
+            <i class="fas fa-user-graduate"></i>
+            <span class="font-medium">Data Siswa</span>
+          </a>
+          <a
+            href="/proses-belajar"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 text-gray-600 hover:bg-emerald-50"
+          >
+            <i class="fas fa-book-reader"></i>
+            <span class="font-medium">Proses Belajar</span>
+          </a>
+        </nav>
+
+        <div class="p-4 border-t border-emerald-50">
+          <a
+            href="/"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition"
+          >
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="font-medium">Kembali</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-grow flex flex-col h-full overflow-hidden">
+        <!-- Top Header -->
+        <header
+          class="h-20 bg-white border-b border-emerald-100 flex items-center justify-between px-8 shrink-0"
+        >
+          <h2 class="text-xl font-bold text-emerald-900">Dashboard Overview</h2>
+          <div class="flex items-center space-x-6"></div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="p-8 overflow-y-auto custom-scrollbar flex-grow">
+          <div class="space-y-8 animate-fade-in">
+            <!-- Welcome Banner -->
+            <div
+              class="bg-emerald-600 rounded-[2rem] p-8 text-white relative overflow-hidden bg-islamic-pattern"
+            >
+              <div class="relative z-10">
+                <h1 class="text-2xl font-bold mb-2">Assalamu'alaikum!</h1>
+                <p class="text-emerald-100 max-w-md">
+                  Selamat datang di pusat kendali SmartHijaiyah. Mari pantau
+                  performa sistem dan perkembangan belajar hari ini.
+                </p>
+              </div>
+              <i
+                class="fas fa-chart-line absolute -right-4 -bottom-4 text-9xl text-emerald-500 opacity-20"
+              ></i>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div
+                class="bg-white p-6 rounded-3xl border border-emerald-50 shadow-sm flex items-center space-x-4"
+              >
+                <div
+                  class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600"
+                >
+                  <i class="fas fa-user-graduate text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-medium text-gray-400">Total Siswa</p>
+                  <p class="text-2xl font-bold text-emerald-900">
+                    {{ stats.total_siswa }}
+                  </p>
+                </div>
+              </div>
+              <div
+                class="bg-white p-6 rounded-3xl border border-emerald-50 shadow-sm flex items-center space-x-4"
+              >
+                <div
+                  class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600"
+                >
+                  <i class="fas fa-chalkboard-teacher text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-medium text-gray-400">Total Guru</p>
+                  <p class="text-2xl font-bold text-emerald-900">
+                    {{ stats.total_guru }}
+                  </p>
+                </div>
+              </div>
+              <div
+                class="bg-white p-6 rounded-3xl border border-emerald-50 shadow-sm flex items-center space-x-4"
+              >
+                <div
+                  class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600"
+                >
+                  <i class="fas fa-hands text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-medium text-gray-400">Sesi Belajar</p>
+                  <p class="text-2xl font-bold text-emerald-900">{{ stats.total_sesi }}</p>
+                </div>
+              </div>
+              <div
+                class="bg-white p-6 rounded-3xl border border-emerald-50 shadow-sm flex items-center space-x-4"
+              >
+                <div
+                  class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600"
+                >
+                  <i class="fas fa-award text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-medium text-gray-400">Pencapaian</p>
+                  <p class="text-2xl font-bold text-emerald-900">{{ stats.pencapaian }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

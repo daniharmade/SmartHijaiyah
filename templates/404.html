@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 - Halaman Tidak Ditemukan | SmartHijaiyah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      .bg-islamic-pattern {
+        background-color: #f0fdf4;
+        background-image: url("https://www.transparenttextures.com/patterns/arabesque.png");
+      }
+      .float-animation {
+        animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-emerald-50 bg-islamic-pattern min-h-screen flex items-center justify-center p-6"
+  >
+    <div class="max-w-md w-full text-center">
+      <!-- Visual Element -->
+      <div class="relative mb-8">
+        <div
+          class="absolute inset-0 bg-emerald-200 rounded-full blur-3xl opacity-30 animate-pulse"
+        ></div>
+        <div class="relative float-animation">
+          <span
+            class="text-[12rem] font-bold text-emerald-900 leading-none opacity-10 select-none"
+            >404</span
+          >
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div
+              class="bg-white p-6 rounded-[2.5rem] shadow-2xl border-b-8 border-emerald-600 inline-block"
+            >
+              <i class="fas fa-search-location text-7xl text-emerald-600"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text Content -->
+      <div class="space-y-4">
+        <h1 class="text-3xl font-bold text-emerald-900">Astagfirullah!</h1>
+        <h2 class="text-xl font-semibold text-emerald-700 italic">
+          Halaman Tidak Ditemukan
+        </h2>
+        <p class="text-gray-600 leading-relaxed">
+          Mohon maaf, sepertinya halaman yang Anda cari telah berpindah tempat
+          atau memang tidak pernah ada di sini.
+        </p>
+      </div>
+
+      <!-- Action Button -->
+      <div class="mt-10">
+        <a
+          href="/"
+          class="inline-flex items-center justify-center px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-xl shadow-emerald-200 transition-all transform hover:scale-105 group"
+        >
+          <i class="fas fa-home mr-3 group-hover:animate-bounce"></i>
+          Kembali ke Beranda
+        </a>
+      </div>
+
+      <!-- Secondary Links -->
+      <div
+        class="mt-8 flex justify-center space-x-6 text-sm font-medium text-emerald-800"
+      >
+        <a href="/belajar" class="hover:text-emerald-600 transition"
+          >Mulai Belajar</a
+        >
+        <span class="text-emerald-200">|</span>
+      </div>
+
+      <!-- Footer Footer (Simple) -->
+      <div
+        class="mt-16 text-emerald-900/30 text-xs font-bold uppercase tracking-widest"
+      >
+        SmartHijaiyah &copy; <span id="year"></span>
+      </div>
+
+      <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+      </script>
+    </div>
+  </body>
+</html>

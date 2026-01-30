@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Guru - SmartHijaiyah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      .active-link {
+        background-color: #10b981;
+        color: white;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #10b981;
+        border-radius: 10px;
+      }
+
+      /* Modal Animation */
+      .modal-overlay {
+        transition: opacity 0.3s ease;
+      }
+      .modal-container {
+        transition:
+          transform 0.3s ease,
+          opacity 0.3s ease;
+      }
+      .modal-hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .modal-hidden .modal-container {
+        transform: scale(0.95);
+      }
+    </style>
+  </head>
+  <body class="bg-emerald-50/50 text-gray-800 overflow-hidden">
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <aside
+        class="w-64 bg-white border-r border-emerald-100 flex flex-col hidden md:flex"
+      >
+        <div class="p-6">
+          <div class="flex items-center space-x-2">
+            <div class="bg-emerald-600 p-2 rounded-lg text-white">
+              <i class="fas fa-hand-holding-heart"></i>
+            </div>
+            <span class="text-xl font-bold text-emerald-800 tracking-tight"
+              >Smart<span class="text-emerald-500">Hijaiyah</span></span
+            >
+          </div>
+        </div>
+
+        <nav class="mt-6 px-4 flex-grow space-y-2">
+          <a
+            href="/dashboard"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 text-gray-600 hover:bg-emerald-50"
+          >
+            <i class="fas fa-th-large"></i>
+            <span class="font-medium">Dashboard</span>
+          </a>
+
+          <a
+            href="/data-guru"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 active-link"
+          >
+            <i class="fas fa-chalkboard-teacher"></i>
+            <span class="font-medium">Data Guru</span>
+          </a>
+
+          <a
+            href="/data-siswa"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 text-gray-600 hover:bg-emerald-50"
+          >
+            <i class="fas fa-user-graduate"></i>
+            <span class="font-medium">Data Siswa</span>
+          </a>
+
+          <a
+            href="/proses-belajar"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition duration-200 text-gray-600 hover:bg-emerald-50"
+          >
+            <i class="fas fa-book-reader"></i>
+            <span class="font-medium">Proses Belajar</span>
+          </a>
+        </nav>
+
+        <div class="p-4 border-t border-emerald-50">
+          <a
+            href="/"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition"
+          >
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="font-medium">Kembali</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-grow flex flex-col h-full overflow-hidden">
+        <header
+          class="h-20 bg-white border-b border-emerald-100 flex items-center justify-between px-8 shrink-0"
+        >
+          <h2 class="text-xl font-bold text-emerald-900">
+            Manajemen Data Guru
+          </h2>
+        </header>
+
+        <div class="p-8 overflow-y-auto custom-scrollbar flex-grow">
+          <div class="space-y-6">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="text-gray-500 text-sm">
+                  Kelola informasi seluruh pengajar SmartHijaiyah
+                </p>
+              </div>
+              <!-- Tombol Tambah Guru dengan trigger Modal -->
+              <button
+                onclick="toggleModal('modal-tambah-guru')"
+                class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-emerald-200 transition flex items-center"
+              >
+                <i class="fas fa-plus mr-2"></i> Tambah Guru
+              </button>
+            </div>
+
+            <div
+              class="bg-white rounded-[2rem] border border-emerald-50 shadow-sm overflow-hidden"
+            >
+              <table class="w-full text-left">
+                <thead class="bg-emerald-50/50">
+                  <tr>
+                    <th
+                      class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider"
+                    >
+                      Guru
+                    </th>
+                    <th
+                      class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider"
+                    >
+                      Identitas
+                    </th>
+                    <th
+                      class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider"
+                    >
+                      Spesialisasi
+                    </th>
+                    <th
+                      class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
+                    <th
+                      class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider text-right"
+                    >
+                      Aksi
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-emerald-50">
+                  {% for guru in gurus %}
+                  <tr class="hover:bg-emerald-50/30 transition">
+                    <td class="px-6 py-4 flex items-center space-x-3">
+                      <div
+                        class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs"
+                      >
+                        {{ guru.nama[:2] | upper }}
+                      </div>
+                      <div>
+                        <p class="text-sm font-bold text-gray-900">
+                          {{ guru.nama }}
+                        </p>
+                        <p class="text-[10px] text-gray-400">
+                          {{ guru.email }}
+                        </p>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">
+                      <span class="text-xs font-medium text-gray-600">
+                        {{ guru.nip }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">
+                      <span class="text-xs font-medium text-gray-600">
+                        {% if guru.spesialisasi == 'dasar' %} Isyarat Dasar {%
+                        elif guru.spesialisasi == 'makhraj' %} Makhrajul Huruf
+                        {% elif guru.spesialisasi == 'lanjut' %} Isyarat Lanjut
+                        {% else %} {{ guru.spesialisasi }} {% endif %}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">
+                      <span
+                        class="{% if guru.status == 'aktif' %} bg-emerald-100 text-emerald-700 {% elif guru.status == 'nonaktif' %} bg-red-100 text-red-700 {% else %} bg-gray-100 text-gray-700 {% endif %} px-3 py-1 rounded-full text-[10px] font-bold"
+                      >
+                        {% if guru.status == 'aktif' %} Aktif {% elif
+                        guru.status == 'nonaktif' %} Non-aktif {% else %} {{
+                        guru.status }} {% endif %}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <!-- EDIT BUTTON -->
+                      <button
+                        onclick="openEditModal(
+      '{{ guru.id }}',
+      '{{ guru.nama }}',
+      '{{ guru.nip }}',
+      '{{ guru.email }}',
+      '{{ guru.spesialisasi }}',
+      '{{ guru.status }}'
+    )"
+                        class="text-gray-400 hover:text-emerald-600 mx-1"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </button>
+
+                      <!-- DELETE -->
+                      <a
+                        href="/hapus-guru/{{ guru.id }}"
+                        onclick="return confirm('Yakin ingin menghapus?');"
+                        class="text-gray-400 hover:text-red-500 mx-1"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- MODAL: TAMBAH GURU -->
+    <div
+      id="modal-tambah-guru"
+      class="fixed inset-0 z-[60] flex items-center justify-center p-4 modal-hidden"
+    >
+      <!-- Backdrop -->
+      <div
+        onclick="toggleModal('modal-tambah-guru')"
+        class="absolute inset-0 bg-emerald-900/40 backdrop-blur-sm"
+      ></div>
+
+      <!-- Modal Content -->
+      <div
+        class="modal-container relative bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-emerald-50"
+      >
+        <div class="p-8">
+          <!-- Modal Header -->
+          <div class="flex justify-between items-center mb-8">
+            <div>
+              <h3 class="text-xl font-bold text-emerald-900">
+                Tambah Guru Baru
+              </h3>
+              <p class="text-xs text-gray-500">
+                Lengkapi informasi profil pengajar
+              </p>
+            </div>
+            <button
+              onclick="toggleModal('modal-tambah-guru')"
+              class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <!-- Modal Body (Form) -->
+          <form action="/tambah-guru" method="POST" class="space-y-5">
+            <div class="grid grid-cols-1 gap-5">
+              <!-- Nama Lengkap -->
+              <div>
+                <label
+                  class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                  >Nama Lengkap</label
+                >
+                <input
+                  type="text"
+                  name="nama"
+                  placeholder="Contoh: Ustadz Ahmad"
+                  class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm"
+                />
+              </div>
+
+              <!-- NIP / Identitas -->
+              <div>
+                <label
+                  class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                  >Nomor Identitas (NIP)</label
+                >
+                <input
+                  type="text"
+                  name="nip"
+                  placeholder="Masukkan 13 digit NIP"
+                  class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm"
+                />
+              </div>
+
+              <!-- Email -->
+              <div>
+                <label
+                  class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                  >Alamat Email</label
+                >
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="nama@smarthijaiyah.id"
+                  class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm"
+                />
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <!-- Spesialisasi -->
+                <div>
+                  <label
+                    class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                  >
+                    Spesialisasi
+                  </label>
+
+                  <div class="relative">
+                    <select
+                      name="spesialisasi"
+                      class="w-full px-5 py-3.5 pr-12 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm appearance-none"
+                    >
+                      <option value="dasar">Isyarat Dasar</option>
+                      <option value="makhraj">Makhrajul Huruf</option>
+                      <option value="lanjut">Isyarat Lanjut</option>
+                    </select>
+
+                    <!-- Icon -->
+                    <div
+                      class="absolute inset-y-0 right-4 flex items-center pointer-events-none"
+                    >
+                      <svg
+                        class="w-4 h-4 text-emerald-600"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Status -->
+                <div>
+                  <label
+                    class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
+                  >
+                    Status
+                  </label>
+
+                  <div class="relative">
+                    <select
+                      name="status"
+                      class="w-full px-5 py-3.5 pr-12 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm appearance-none"
+                    >
+                      <option value="aktif">Aktif</option>
+                      <option value="nonaktif">Non-aktif</option>
+                    </select>
+
+                    <!-- Icon -->
+                    <div
+                      class="absolute inset-y-0 right-4 flex items-center pointer-events-none"
+                    >
+                      <svg
+                        class="w-4 h-4 text-emerald-600"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Footer (Actions) -->
+            <div class="flex space-x-3 pt-6">
+              <button
+                type="button"
+                onclick="toggleModal('modal-tambah-guru')"
+                class="flex-1 px-6 py-4 rounded-2xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 transition"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                class="flex-1 px-6 py-4 rounded-2xl font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition"
+              >
+                Simpan Data
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: EDIT GURU -->
+    <div
+      id="modal-edit-guru"
+      class="fixed inset-0 z-[60] flex items-center justify-center p-4 modal-hidden"
+    >
+      <div
+        onclick="toggleModal('modal-edit-guru')"
+        class="absolute inset-0 bg-emerald-900/40 backdrop-blur-sm"
+      ></div>
+
+      <div
+        class="modal-container relative bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-emerald-50"
+      >
+        <div class="p-8">
+          <div class="flex justify-between items-center mb-8">
+            <div>
+              <h3 class="text-xl font-bold text-emerald-900">Edit Data Guru</h3>
+              <p class="text-xs text-gray-500">Perbarui informasi pengajar</p>
+            </div>
+            <button
+              onclick="toggleModal('modal-edit-guru')"
+              class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <form id="form-edit-guru" method="POST" class="space-y-5">
+            <input type="hidden" id="edit-id" />
+
+            <div>
+              <label class="block text-xs font-bold text-emerald-800 mb-2">
+                Nama Lengkap
+              </label>
+              <input
+                type="text"
+                name="nama"
+                id="edit-nama"
+                class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-emerald-800 mb-2">
+                NIP
+              </label>
+              <input
+                type="text"
+                name="nip"
+                id="edit-nip"
+                class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-emerald-800 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                id="edit-email"
+                class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <select
+                name="spesialisasi"
+                id="edit-spesialisasi"
+                class="px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 text-sm"
+              >
+                <option value="dasar">Isyarat Dasar</option>
+                <option value="makhraj">Makhrajul Huruf</option>
+                <option value="lanjut">Isyarat Lanjut</option>
+              </select>
+
+              <select
+                name="status"
+                id="edit-status"
+                class="px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 text-sm"
+              >
+                <option value="aktif">Aktif</option>
+                <option value="nonaktif">Non-aktif</option>
+              </select>
+            </div>
+
+            <div class="flex space-x-3 pt-6">
+              <button
+                type="button"
+                onclick="toggleModal('modal-edit-guru')"
+                class="flex-1 px-6 py-4 rounded-2xl font-bold text-gray-500 bg-gray-100"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                class="flex-1 px-6 py-4 rounded-2xl font-bold text-white bg-emerald-600"
+              >
+                Update Data
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.toggle("modal-hidden");
+
+        if (!modal.classList.contains("modal-hidden")) {
+          document.body.style.overflow = "hidden";
+        } else {
+          document.body.style.overflow = "auto";
+        }
+      }
+
+      function openEditModal(id, nama, nip, email, spesialisasi, status) {
+        document.getElementById("edit-nama").value = nama;
+        document.getElementById("edit-nip").value = nip;
+        document.getElementById("edit-email").value = email;
+        document.getElementById("edit-spesialisasi").value = spesialisasi;
+        document.getElementById("edit-status").value = status;
+
+        const form = document.getElementById("form-edit-guru");
+        form.action = "/edit-guru/" + id;
+
+        toggleModal("modal-edit-guru");
+      }
+    </script>
+  </body>
+</html>
