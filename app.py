@@ -429,8 +429,6 @@ def edit_proses(id):
 
     return redirect('/proses-belajar')
 
-
-
 # ==============================
 # Error Handler 404
 # ==============================
@@ -444,4 +442,13 @@ def page_not_found(e):
 # ==============================
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    host = "127.0.0.1"
+    port = 5000
+
+    print("=" * 50)
+    print("✅ Website Berhasil Dijalankan")
+    print(f"🌐 Akses di: http://{host}:{port}/")
+    print("=" * 50)
+
+    app.run(debug=True, host=host, port=port)
+
