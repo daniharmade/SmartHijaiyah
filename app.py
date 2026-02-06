@@ -14,7 +14,7 @@ app = Flask(__name__)
 # ==============================
 # 1. Load Model & Konfigurasi
 # ==============================
-model_dict = pickle.load(open('./model/model.p', 'rb'))
+model_dict = pickle.load(open('./model/hijaiyah.p', 'rb'))
 model = model_dict['model']
 
 # Global variable untuk menyimpan prediksi terbaru
