@@ -24,6 +24,37 @@
         }
     </style>
 </head>
+
+<!-- MODAL PILIHAN BELAJAR -->
+<div id="belajarModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
+    <div class="bg-white w-[90%] max-w-md rounded-3xl p-8 shadow-2xl relative animate-fadeIn">
+
+        <!-- Close Button -->
+        <button id="closeBelajarModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+
+        <div class="text-center mb-8">
+            <h3 class="text-2xl font-bold text-emerald-800 mb-2">Pilih Mode Belajar</h3>
+            <p class="text-gray-500 text-sm">Silakan pilih jenis pembelajaran yang ingin Anda mulai.</p>
+        </div>
+
+        <div class="space-y-4">
+            <a href="/belajar-hijaiyah"
+               class="block bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-2xl font-bold text-center transition shadow-lg">
+               Belajar Hijaiyah
+            </a>
+
+            <a href="/belajar-sibi"
+               class="block bg-emerald-100 hover:bg-emerald-200 text-emerald-800 py-4 rounded-2xl font-bold text-center transition">
+               Belajar SIBI
+            </a>
+        </div>
+
+    </div>
+</div>
+
+
 <body class="bg-emerald-50 text-gray-800">
 
     <!-- Navigation -->
@@ -49,9 +80,8 @@
 
                 <!-- Action Button & Mobile Toggle -->
                 <div class="flex items-center space-x-4">
-                    <a href="/belajar" class="hidden sm:inline-block bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-full font-semibold transition transform hover:scale-105 shadow-lg">
-                        Mulai Belajar
-                    </a>
+                        <a href="\belajar-hijaiyah"  class="hidden sm:inline-block bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-full font-semibold transition transform hover:scale-105 shadow-lg">Belajar Hijaiyah</a>
+
                     <!-- Mobile Menu Button -->
                     <button class="md:hidden text-emerald-800 focus:outline-none" id="menu-toggle">
                         <i class="fas fa-bars text-2xl" id="menu-icon"></i>
@@ -85,9 +115,11 @@
                         SmartHijaiyah membantu Anda mempelajari bahasa isyarat 30 huruf Hijaiyah secara interaktif dengan teknologi pendeteksi gerakan tangan yang akurat.
                     </p>
                     <div class="flex flex-col sm:flex-row justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
-                        <a href="/belajar" class="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-xl hover:bg-emerald-700 transition flex items-center justify-center">
+                        <button id="openBelajarModal" 
+                            class="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-xl hover:bg-emerald-700 transition flex items-center justify-center">
                             <i class="fas fa-play-circle mr-2"></i> Belajar Sekarang
-                        </a>
+                        </button>
+
                         <a href="#huruf" class="bg-white text-emerald-700 border-2 border-emerald-100 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-emerald-50 transition flex items-center justify-center">
                             Lihat Huruf
                         </a>
@@ -345,6 +377,55 @@
         </div>
     </section>
 
+    <!-- SECTION DUAL LEARNING -->
+    <section class="py-16 md:py-24 bg-gradient-to-b from-emerald-50 to-white">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+
+            <h2 class="text-3xl md:text-4xl font-bold text-emerald-900 mb-6">
+                Belajar Hijaiyah & SIBI Dalam Satu Platform
+            </h2>
+
+            <p class="text-gray-600 max-w-3xl mx-auto mb-14">
+                SmartHijaiyah kini mendukung dua metode pembelajaran: Bahasa Isyarat Huruf Hijaiyah untuk pembelajaran Al-Qur'an,
+                serta SIBI (Sistem Isyarat Bahasa Indonesia) untuk komunikasi sehari-hari.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8">
+
+                <!-- Hijaiyah Card -->
+                <div class="bg-white rounded-3xl p-8 shadow-lg border border-emerald-100 hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center text-white text-2xl mx-auto mb-6">
+                        <i class="fas fa-book-quran"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-emerald-800 mb-4">Bahasa Isyarat Hijaiyah</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-6">
+                        Pelajari 30 huruf hijaiyah dengan sistem deteksi kamera berbasis AI untuk membantu pembelajaran Al-Qur'an yang lebih inklusif.
+                    </p>
+                    <a href="/belajar-hijaiyah"
+                    class="bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-emerald-700 transition">
+                    Belajar Hijaiyah
+                    </a>
+                </div>
+
+                <!-- SIBI Card -->
+                <div class="bg-white rounded-3xl p-8 shadow-lg border border-emerald-100 hover:scale-105 transition">
+                    <div class="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-white text-2xl mx-auto mb-6">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-emerald-800 mb-4">Bahasa Isyarat SIBI</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-6">
+                        Latih kemampuan komunikasi menggunakan Sistem Isyarat Bahasa Indonesia (SIBI) secara interaktif dengan kamera real-time.
+                    </p>
+                    <a href="/belajar-sibi"
+                    class="inline-block bg-emerald-100 text-emerald-800 px-6 py-3 rounded-xl font-semibold hover:bg-emerald-200 transition">
+                    Belajar SIBI
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="bg-emerald-950 text-emerald-100 pt-16 md:pt-20 pb-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 md:gap-12 mb-12 md:mb-16">
@@ -362,16 +443,18 @@
             <div>
                 <h4 class="text-white font-bold mb-6">Navigasi</h4>
                 <ul class="space-y-3 text-emerald-200/60 text-sm md:text-base">
-                    <li><a href="#" class="hover:text-emerald-400 transition">Beranda</a></li>
-                    <li><a href="#" class="hover:text-emerald-400 transition">Tentang Kami</a></li>
-                    <li><a href="#" class="hover:text-emerald-400 transition">Daftar Huruf</a></li>
-                    <li><a href="#" class="hover:text-emerald-400 transition">Donasi</a></li>
+                    <li><a href="/beranda" class="hover:text-emerald-400 transition">Beranda</a></li>
+                    <li><a href="/tentang" class="hover:text-emerald-400 transition">Tentang</a></li>
+                    <li><a href="/huruf" class="hover:text-emerald-400 transition">Daftar Huruf</a></li>
+                    <li><a href="/cara-kerja" class="hover:text-emerald-400 transition">Cara Belajar</a></li>
+                    <li><a href="/developer" class="hover:text-emerald-400 transition">Tim Pengembang</a></li>
+                    <li><a href="/dashboard" class="hover:text-emerald-400 transition">Dashboard</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="text-white font-bold mb-6">Hubungi Kami</h4>
                 <ul class="space-y-3 text-emerald-200/60 text-sm md:text-base">
-                    <li class="flex items-center"><i class="fas fa-envelope mr-3 text-emerald-500"></i> salam@smarthijaiyah.id</li>
+                    <li class="flex items-center"><i class="fas fa-envelope mr-3 text-emerald-500"></i> email@gmail.com</li>
                     <li class="flex items-center"><i class="fas fa-phone mr-3 text-emerald-500"></i> +62 812 3456 789</li>
                 </ul>
             </div>
@@ -382,6 +465,28 @@
     </footer>
 
     <script>
+        // MODAL LOGIC
+        const belajarModal = document.getElementById("belajarModal");
+        const openBelajarModal = document.getElementById("openBelajarModal");
+        const closeBelajarModal = document.getElementById("closeBelajarModal");
+
+        openBelajarModal.addEventListener("click", () => {
+            belajarModal.classList.remove("hidden");
+            belajarModal.classList.add("flex");
+        });
+
+        closeBelajarModal.addEventListener("click", () => {
+            belajarModal.classList.add("hidden");
+            belajarModal.classList.remove("flex");
+        });
+
+        window.addEventListener("click", (e) => {
+            if (e.target === belajarModal) {
+                belajarModal.classList.add("hidden");
+                belajarModal.classList.remove("flex");
+            }
+        });
+
         document.getElementById("year").textContent = new Date().getFullYear();
 
         // Mobile Menu Toggle Logic

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deteksi Isyarat - SmartHijaiyah</title>
+    <title>Deteksi Isyarat SIBI - SmartSIBI</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -14,27 +14,27 @@
     </style>
 </head>
 
-<body class="bg-emerald-50 min-h-screen flex flex-col">
+<body class="bg-blue-50 min-h-screen flex flex-col">
 
-<header class="bg-white border-b border-emerald-100 py-4 px-6 shadow-sm">
+<header class="bg-white border-b border-blue-100 py-4 px-6 shadow-sm">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
         <div class="flex items-center space-x-6">
-            <a href="/" class="text-emerald-700 hover:text-emerald-900 flex items-center font-medium transition">
+            <a href="/" class="text-blue-700 hover:text-blue-900 flex items-center font-medium transition">
                 <i class="fas fa-chevron-left mr-2"></i> Kembali
             </a>
-            <!-- MENU KE DASHBOARD DITAMBAHKAN DISINI -->
-            <div class="h-6 w-px bg-emerald-100 hidden sm:block"></div>
-            <a href="/dashboard" class="text-emerald-600 hover:text-emerald-800 hidden sm:flex items-center font-medium transition">
+
+            <div class="h-6 w-px bg-blue-100 hidden sm:block"></div>
+
+            <a href="/dashboard" class="text-blue-600 hover:text-blue-800 hidden sm:flex items-center font-medium transition">
                 <i class="fas fa-th-large mr-2"></i> Dashboard Admin
             </a>
         </div>
         
-        <span class="text-lg font-bold text-emerald-800">
-            Smart<span class="text-emerald-500">Hijaiyah</span>
+        <span class="text-lg font-bold text-blue-800">
+            Smart<span class="text-blue-500">SIBI</span>
         </span>
 
-        <!-- Ikon Dashboard untuk Mobile -->
-        <a href="/dashboard" class="sm:hidden text-emerald-600">
+        <a href="/dashboard" class="sm:hidden text-blue-600">
             <i class="fas fa-th-large text-xl"></i>
         </a>
     </div>
@@ -47,36 +47,32 @@
 
         <div class="bg-black rounded-3xl overflow-hidden shadow-2xl relative aspect-video border-4 border-white flex items-center justify-center">
 
-            <!-- Placeholder -->
             <div id="camera-placeholder" class="text-white text-center">
                 <i class="fas fa-camera text-4xl mb-3"></i>
                 <p>Kamera belum aktif</p>
             </div>
 
-            <!-- Stream -->
             <img id="webcam"
                  class="w-full h-full object-cover hidden" />
 
-            <!-- LIVE Indicator -->
             <div id="live-indicator"
                  class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-2 hidden">
                 <span class="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></span>
                 LIVE
             </div>
 
-            <!-- Detection Popup -->
             <div id="detection-msg"
                  class="absolute bottom-6 left-1/2 -translate-x-1/2
                         bg-white/90 backdrop-blur px-6 py-3
                         rounded-2xl shadow-xl flex items-center space-x-3
                         transition-opacity opacity-0">
 
-                <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white">
+                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">
                     <i class="fas fa-check"></i>
                 </div>
 
-                <span class="text-emerald-900 font-bold">
-                    Terdeteksi
+                <span class="text-blue-900 font-bold">
+                    Huruf Terdeteksi
                 </span>
             </div>
 
@@ -86,8 +82,8 @@
         <div class="flex justify-center gap-4 mt-6">
 
             <button id="startBtn"
-                class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl shadow-md transition">
-                <i class="fas fa-play mr-2"></i> Mulai
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md transition">
+                <i class="fas fa-play mr-2"></i> Mulai Deteksi
             </button>
 
             <button id="stopBtn"
@@ -101,21 +97,21 @@
     </div>
 
     <!-- RESULT PANEL -->
-    <div class="lg:w-80 bg-white rounded-3xl p-6 shadow-sm border border-emerald-100 text-center">
+    <div class="lg:w-80 bg-white rounded-3xl p-6 shadow-sm border border-blue-100 text-center">
 
-        <h3 class="text-emerald-900 font-bold mb-6">
-            Hasil Deteksi
+        <h3 class="text-blue-900 font-bold mb-6">
+            Hasil Deteksi SIBI
         </h3>
 
-        <div class="w-40 h-40 bg-emerald-50 rounded-3xl mx-auto flex items-center justify-center mb-4">
-            <span id="detected-arabic"
-                  class="text-7xl font-bold text-emerald-700">
+        <div class="w-40 h-40 bg-blue-50 rounded-3xl mx-auto flex items-center justify-center mb-4">
+            <span id="detected-letter"
+                  class="text-7xl font-bold text-blue-700">
                   -
             </span>
         </div>
 
         <h2 id="detected-name"
-            class="text-2xl font-bold text-emerald-600 uppercase">
+            class="text-2xl font-bold text-blue-600 uppercase">
             Menunggu...
         </h2>
 
@@ -133,27 +129,17 @@ const liveIndicator = document.getElementById('live-indicator');
 
 const detectionMsg = document.getElementById('detection-msg');
 const detectedName = document.getElementById('detected-name');
-const detectedArabic = document.getElementById('detected-arabic');
+const detectedLetter = document.getElementById('detected-letter');
 
 let cameraActive = false;
 let cooldown = false;
-
-// Mapping huruf lengkap
-const arabicMap = {
-    "Alif":"أ","Ba":"ب","Ta":"ت","Tsa":"ث","Jim":"ج",
-    "Ha":"ح","Kho":"خ","Dal":"د","Dzal":"ذ","Ra":"ر",
-    "Zai":"ز","Sin":"س","Syin":"ش","Shad":"ص","Dhad":"ض",
-    "Tha":"ط","Zha":"ظ","Ain":"ع","Ghain":"غ","Fa":"ف",
-    "Qaf":"ق","Kaf":"ك","Lam":"ل","Mim":"م","Nun":"ن",
-    "Waw":"و","Ya":"ي","Lam Alif":"لا"
-};
 
 // START CAMERA
 startBtn.addEventListener('click', () => {
 
     if (cameraActive) return;
 
-    webcam.src = "{{ url_for('video_feed') }}";
+    webcam.src = "{{ url_for('video_feed_sibi') }}";
     webcam.classList.remove('hidden');
     placeholder.classList.add('hidden');
     liveIndicator.classList.remove('hidden');
@@ -172,21 +158,26 @@ stopBtn.addEventListener('click', () => {
 
     if (!cameraActive) return;
 
-    webcam.src = "";
-    webcam.classList.add('hidden');
-    placeholder.classList.remove('hidden');
-    liveIndicator.classList.add('hidden');
+    // 🔥 PANGGIL BACKEND UNTUK STOP CAMERA
+    fetch('/stop_camera')
+        .then(() => {
 
-    cameraActive = false;
+            webcam.src = "";
+            webcam.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            liveIndicator.classList.add('hidden');
 
-    stopBtn.disabled = true;
-    stopBtn.classList.add("opacity-50","cursor-not-allowed");
+            cameraActive = false;
 
-    startBtn.disabled = false;
-    startBtn.classList.remove("opacity-50","cursor-not-allowed");
+            stopBtn.disabled = true;
+            stopBtn.classList.add("opacity-50","cursor-not-allowed");
 
-    detectedName.innerText = "Menunggu...";
-    detectedArabic.innerText = "-";
+            startBtn.disabled = false;
+            startBtn.classList.remove("opacity-50","cursor-not-allowed");
+
+            detectedName.innerText = "Menunggu...";
+            detectedLetter.innerText = "-";
+        });
 });
 
 // CHECK PREDICTION
@@ -194,7 +185,7 @@ function checkPrediction() {
 
     if (!cameraActive) return;
 
-    fetch('/get_prediction')
+    fetch('/get_prediction_sibi')
         .then(res => res.json())
         .then(data => {
 
@@ -206,15 +197,15 @@ function checkPrediction() {
         });
 }
 
-function showDetection(name) {
+function showDetection(letter) {
 
     cooldown = true;
 
-    detectedName.innerText = name;
-    detectedArabic.innerText = arabicMap[name] || "?";
+    detectedName.innerText = "Huruf " + letter;
+    detectedLetter.innerText = letter;
 
     detectionMsg.querySelector('span').innerText =
-        `Terdeteksi: ${name}`;
+        `Terdeteksi: ${letter}`;
 
     detectionMsg.style.opacity = '1';
 

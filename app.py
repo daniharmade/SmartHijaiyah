@@ -14,11 +14,20 @@ app = Flask(__name__)
 # ==============================
 # 1. Load Model & Konfigurasi
 # ==============================
-model_dict = pickle.load(open('./model/hijaiyah.p', 'rb'))
-model = model_dict['model']
+hijaiyah_model_dict = pickle.load(open('./model/hijaiyah.p', 'rb'))
+hijaiyah_model = hijaiyah_model_dict['model']
+
+sibi_model_dict = pickle.load(open('./model/sibi.p', 'rb'))
+sibi_model = sibi_model_dict['model']
 
 # Global variable untuk menyimpan prediksi terbaru
-current_prediction = None
+current_prediction_hijaiyah = None
+current_prediction_sibi = None
+
+camera_running = False
+
+cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
 # Inisialisasi MediaPipe
 mp_hands = mp.solutions.hands
@@ -32,7 +41,7 @@ hands = mp_hands.Hands(
 )
 
 # Label Prediksi
-labels_dict = {
+labels_hijaiyah = {
     0: 'ا (Alif)', 1: 'ب (Ba)', 2: 'ت (Ta)', 3: 'ث (Tsa)',
     4: 'ج (Jim)', 5: 'ح (Ha)', 6: 'خ (Kha)', 7: 'د (Dal)',
     8: 'ذ (Dzal)', 9: 'ر (Ra)', 10: 'ز (Zay)', 11: 'س (Sin)',
@@ -45,6 +54,25 @@ labels_dict = {
 }
 
 FONT_PATH = "./static/fonts/NotoNaskhArabic-Regular.ttf"
+
+# ==============================
+# CAMERA CONTROL
+# ==============================
+
+def start_camera():
+    global cap, camera_running
+    if not camera_running:
+        cap = cv2.VideoCapture(0)
+        cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        camera_running = True
+
+
+def stop_camera():
+    global cap, camera_running
+    camera_running = False
+    if cap is not None and cap.isOpened():
+        cap.release()
+    cap = None
 
 # ==============================
 # 2. Helper Function
@@ -80,12 +108,12 @@ def draw_arabic_text(img, text, position, font_size=40):
 # 3. Video Stream Generator
 # ==============================
 
-def gen_frames():
-    global current_prediction
+def gen_frames_hijaiyah():
+    global current_prediction_hijaiyah
 
-    cap = cv2.VideoCapture(0)
+    # cap = cv2.VideoCapture(0)
 
-    while True:
+    while camera_running:
         success, frame = cap.read()
         if not success:
             break
@@ -118,14 +146,14 @@ def gen_frames():
                 data_aux.append(y_[i] - min_y)
 
             if len(data_aux) == 42:
-                prediction = model.predict([np.asarray(data_aux)])
+                prediction = hijaiyah_model.predict([np.asarray(data_aux)])
                 predicted_index = int(prediction[0])
 
-                if predicted_index in labels_dict:
-                    predicted_character = labels_dict[predicted_index]
+                if predicted_index in labels_hijaiyah:
+                    predicted_character = labels_hijaiyah[predicted_index]
 
                     # Simpan hanya nama huruf (Alif, Ba, dst)
-                    current_prediction = predicted_character.split("(")[1].replace(")", "")
+                    current_prediction_hijaiyah = predicted_character.split("(")[1].replace(")", "")
 
                     # Bounding box
                     x1 = int(min(x_) * W) - 10
@@ -143,7 +171,7 @@ def gen_frames():
                     )
         else:
             # Reset kalau tidak ada tangan
-            current_prediction = None
+            current_prediction_hijaiyah = None
 
         ret, buffer = cv2.imencode('.jpg', frame)
         frame_bytes = buffer.tobytes()
@@ -151,6 +179,83 @@ def gen_frames():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
+# Sibi
+labels_sibi = {
+    0: 'Default', 1: 'A', 2: 'B', 3: 'C', 4: 'D', 5:'E',
+    6:'F', 7:'G', 8:'H', 9:'I', 10:'J', 11:'K', 12:'L',
+    13:'M', 14:'N', 15:'O', 16:'P', 17:'Q', 18:'R',
+    19:'S', 20:'T', 21:'U', 22:'V', 23:'W',
+    24:'X', 25:'Y', 26:'Z'
+}
+
+def gen_frames_sibi():
+    global current_prediction_sibi
+
+    # cap = cv2.VideoCapture(0)
+
+    while camera_running:
+        success, frame = cap.read()
+        if not success:
+            break
+
+        H, W, _ = frame.shape
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = hands.process(frame_rgb)
+
+        if results.multi_hand_landmarks:
+            data_aux = []
+            x_ = []
+            y_ = []
+
+            for hand_landmarks in results.multi_hand_landmarks[:2]:
+                mp_drawing.draw_landmarks(
+                    frame,
+                    hand_landmarks,
+                    mp_hands.HAND_CONNECTIONS
+                )
+
+                for lm in hand_landmarks.landmark:
+                    x_.append(lm.x)
+                    y_.append(lm.y)
+
+            if x_ and y_:
+                min_x = min(x_)
+                min_y = min(y_)
+
+                for i in range(len(x_)):
+                    data_aux.append(x_[i] - min_x)
+                    data_aux.append(y_[i] - min_y)
+
+                if len(data_aux) == 42:
+                    prediction = sibi_model.predict([np.asarray(data_aux)])
+                    predicted_index = int(prediction[0])
+
+                    if predicted_index in labels_sibi:
+                        predicted_character = labels_sibi[predicted_index]
+                        current_prediction_sibi = predicted_character
+
+                        x1 = int(min(x_) * W) - 10
+                        y1 = int(min(y_) * H) - 10
+                        x2 = int(max(x_) * W) + 10
+                        y2 = int(max(y_) * H) + 10
+
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 204, 0), 4)
+                        cv2.putText(frame, predicted_character,
+                                    (x1, y1 - 10),
+                                    cv2.FONT_HERSHEY_DUPLEX,
+                                    1.5, (204, 0, 204), 3)
+        else:
+            current_prediction_sibi = None
+
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame_bytes = buffer.tobytes()
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+# ==============================
+# Backend Dashboard
+# ==============================
 DATABASE = 'database.db'
 
 def get_db_connection():
@@ -232,19 +337,48 @@ def index():
 def developer():
     return render_template('developer.html')
 
-@app.route('/belajar')
-def belajar():
-    return render_template('belajar.html')
+# ==============================
+# HALAMAN HIJAIYAH
+# ==============================
+@app.route('/belajar-hijaiyah')
+def belajar_hijaiyah():
+    return render_template('belajar_hijaiyah.html')
 
-@app.route('/video_feed')
-def video_feed():
-    return Response(gen_frames(),
+@app.route('/video_feed_hijaiyah')
+def video_feed_hijaiyah():
+    start_camera()  # 🔥 WAJIB
+    return Response(gen_frames_hijaiyah(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/get_prediction')
-def get_prediction():
-    global current_prediction
-    return jsonify({"prediction": current_prediction})
+@app.route('/get_prediction_hijaiyah')
+def get_prediction_hijaiyah():
+    return jsonify({"prediction": current_prediction_hijaiyah})
+
+# ==============================
+# HALAMAN SIBI
+# ==============================
+@app.route('/belajar-sibi')
+def belajar_sibi():
+    return render_template('belajar_sibi.html')
+
+@app.route('/video_feed_sibi')
+def video_feed_sibi():
+    start_camera()  # 🔥 WAJIB
+    return Response(gen_frames_sibi(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/get_prediction_sibi')
+def get_prediction_sibi():
+    return jsonify({"prediction": current_prediction_sibi})
+
+@app.route('/stop_camera')
+def stop_camera_route():
+    stop_camera()
+    return jsonify({"status": "stopped"})
+
+# ==============================
+# HALAMAN DASHBOARD
+# ==============================
 
 @app.route('/dashboard')
 def dashboard():
@@ -451,4 +585,3 @@ if __name__ == '__main__':
     print("=" * 50)
 
     app.run(debug=True, host=host, port=port)
-
