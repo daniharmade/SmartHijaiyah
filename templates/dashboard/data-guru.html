@@ -159,7 +159,7 @@
                     <th
                       class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider"
                     >
-                      Spesialisasi
+                      Kelas
                     </th>
                     <th
                       class="px-6 py-4 text-xs font-bold text-emerald-800 uppercase tracking-wider"
@@ -198,10 +198,7 @@
                     </td>
                     <td class="px-6 py-4">
                       <span class="text-xs font-medium text-gray-600">
-                        {% if guru.spesialisasi == 'dasar' %} Isyarat Dasar {%
-                        elif guru.spesialisasi == 'makhraj' %} Makhrajul Huruf
-                        {% elif guru.spesialisasi == 'lanjut' %} Isyarat Lanjut
-                        {% else %} {{ guru.spesialisasi }} {% endif %}
+                      {{ guru.kelas }}
                       </span>
                     </td>
                     <td class="px-6 py-4">
@@ -221,7 +218,7 @@
       '{{ guru.nama }}',
       '{{ guru.nip }}',
       '{{ guru.email }}',
-      '{{ guru.spesialisasi }}',
+      '{{ guru.kelas }}',
       '{{ guru.status }}'
     )"
                         class="text-gray-400 hover:text-emerald-600 mx-1"
@@ -328,42 +325,21 @@
               </div>
 
               <div class="grid grid-cols-2 gap-4">
-                <!-- Spesialisasi -->
+                <!-- Kelas -->
                 <div>
                   <label
                     class="block text-xs font-bold text-emerald-800 uppercase tracking-widest mb-2"
                   >
-                    Spesialisasi
+                    Kelas
                   </label>
 
                   <div class="relative">
-                    <select
-                      name="spesialisasi"
-                      class="w-full px-5 py-3.5 pr-12 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm appearance-none"
-                    >
-                      <option value="dasar">Isyarat Dasar</option>
-                      <option value="makhraj">Makhrajul Huruf</option>
-                      <option value="lanjut">Isyarat Lanjut</option>
-                    </select>
-
-                    <!-- Icon -->
-                    <div
-                      class="absolute inset-y-0 right-4 flex items-center pointer-events-none"
-                    >
-                      <svg
-                        class="w-4 h-4 text-emerald-600"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </div>
+                   <input
+                      type="text"
+                      name="kelas"
+                      placeholder="Contoh: X-A"
+                      class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition text-sm"
+                    />
                   </div>
                 </div>
 
@@ -495,15 +471,13 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-              <select
-                name="spesialisasi"
-                id="edit-spesialisasi"
-                class="px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 text-sm"
-              >
-                <option value="dasar">Isyarat Dasar</option>
-                <option value="makhraj">Makhrajul Huruf</option>
-                <option value="lanjut">Isyarat Lanjut</option>
-              </select>
+            <input
+                type="text"
+                name="kelas"
+                id="edit-kelas"
+                class="w-full px-5 py-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+                placeholder="Masukkan kelas"
+              />
 
               <select
                 name="status"
@@ -547,11 +521,11 @@
         }
       }
 
-      function openEditModal(id, nama, nip, email, spesialisasi, status) {
+      function openEditModal(id, nama, nip, email, kelas, status) {
         document.getElementById("edit-nama").value = nama;
         document.getElementById("edit-nip").value = nip;
         document.getElementById("edit-email").value = email;
-        document.getElementById("edit-spesialisasi").value = spesialisasi;
+        document.getElementById("edit-kelas").value = kelas;
         document.getElementById("edit-status").value = status;
 
         const form = document.getElementById("form-edit-guru");

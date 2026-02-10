@@ -273,7 +273,7 @@ def init_db():
             nama TEXT NOT NULL,
             nip TEXT NOT NULL,
             email TEXT NOT NULL,
-            spesialisasi TEXT NOT NULL,
+            kelas TEXT NOT NULL,
             status TEXT NOT NULL
         )
     ''')
@@ -397,13 +397,13 @@ def tambah_guru():
     nama = request.form['nama']
     nip = request.form['nip']
     email = request.form['email']
-    spesialisasi = request.form['spesialisasi']
+    kelas = request.form['kelas']
     status = request.form['status']
 
     conn = get_db_connection()
     conn.execute(
-        'INSERT INTO guru (nama, nip, email, spesialisasi, status) VALUES (?, ?, ?, ?, ?)',
-        (nama, nip, email, spesialisasi, status)
+        'INSERT INTO guru (nama, nip, email, kelas, status) VALUES (?, ?, ?, ?, ?)',
+        (nama, nip, email, kelas, status)
     )
     conn.commit()
     conn.close()
@@ -423,15 +423,15 @@ def edit_guru(id):
     nama = request.form['nama']
     nip = request.form['nip']
     email = request.form['email']
-    spesialisasi = request.form['spesialisasi']
+    kelas = request.form['kelas']
     status = request.form['status']
 
     conn = get_db_connection()
     conn.execute('''
         UPDATE guru
-        SET nama=?, nip=?, email=?, spesialisasi=?, status=?
+        SET nama=?, nip=?, email=?, kelas=?, status=?
         WHERE id=?
-    ''', (nama, nip, email, spesialisasi, status, id))
+    ''', (nama, nip, email, kelas, status, id))
     conn.commit()
     conn.close()
 
