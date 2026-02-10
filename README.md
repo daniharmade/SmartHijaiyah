@@ -16,25 +16,27 @@ SmartHijaiyah adalah platform web interaktif berbasis Artificial Intelligence ya
   <img src="preview/belajar.png" width="800">
 </p>
 
-### 🎓 Halaman Dashboard
+### 📊 Halaman Dashboard
 <p align="center">
   <img src="preview/dashboard.png" width="800">
 </p>
 
-### 🎓 Halaman Proses Belajar
+### 🎥 Halaman Proses Belajar
 <p align="center">
   <img src="preview/proses-belajar.png" width="800">
 </p>
 
-### 🎓 Halaman Input Proses Belajar
+### 📝 Halaman Input Nilai
 <p align="center">
   <img src="preview/input-nilai.png" width="800">
 </p>
 
+---
 
 ## 🌟 Deskripsi Singkat
 
-Proyek ini menyediakan media pembelajaran huruf Hijaiyah yang modern, interaktif, dan mudah diakses. Pengguna dapat mempraktikkan gerakan isyarat huruf Hijaiyah di depan kamera, dan sistem akan memberikan hasil prediksi secara langsung menggunakan model Machine Learning.
+Proyek ini menyediakan media pembelajaran huruf Hijaiyah yang modern, interaktif, dan mudah diakses.  
+Pengguna dapat mempraktikkan gerakan isyarat huruf Hijaiyah di depan kamera, dan sistem akan memberikan hasil prediksi secara langsung menggunakan model Machine Learning.
 
 Website ini dikembangkan sebagai implementasi Computer Vision dan Supervised Learning dalam bidang edukasi berbasis AI.
 
@@ -57,7 +59,7 @@ Website ini dikembangkan sebagai implementasi Computer Vision dan Supervised Lea
 ## 🛠️ Teknologi yang Digunakan
 
 ### Backend
-- Python 3.x
+- Python 3.10
 - Flask
 
 ### Computer Vision
@@ -94,64 +96,166 @@ SmartHijaiyah/
 │   ├── js/
 │   ├── img/
 │   │   └── hijaiyah/
-│   │       ├── alif.jpg
-│   │       ├── ba.jpg
-│   │       └── ...
 ├── templates/
 │   ├── index.html
 │   └── belajar.html
-└── requirements.txt
+├── requirements.txt
+├── .gitignore
+└── README.md
 ```
 
 ---
 
-## 🚀 Setup dan Instalasi
+# 🚀 Setup & Installation Guide
 
-### 1. Prasyarat
-- Python 3.7 atau lebih baru
-- pip
-- Webcam aktif
+> ⚠️ Disarankan menggunakan **Python 3.10** untuk kompatibilitas terbaik.
 
-### 2. Buat Virtual Environment (Opsional tapi disarankan)
+---
+
+# 💻 Setup di Windows
+
+## 1️⃣ Install Python 3.10
+
+Download dari:
+https://www.python.org/downloads/release/python-3100/
+
+Saat install:
+- ✅ Centang **Add Python to PATH**
+- ✅ Klik **Install Now**
+
+Cek versi:
+
+```bash
+python --version
+```
+
+---
+
+## 2️⃣ Masuk ke Folder Project
+
+```bash
+cd path\ke\SmartHijaiyah
+```
+
+Contoh:
+
+```bash
+cd D:\Project\SmartHijaiyah
+```
+
+---
+
+## 3️⃣ Buat Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
-Aktifkan:
+---
 
-Windows:
+## 4️⃣ Aktifkan Virtual Environment
+
+Command Prompt:
+
 ```bash
 venv\Scripts\activate
 ```
 
-Mac/Linux:
+PowerShell:
+
 ```bash
-source venv/bin/activate
+venv\Scripts\Activate.ps1
 ```
 
-### 3. Install Dependencies
+---
 
-Buat file `requirements.txt`:
+## 5️⃣ Upgrade pip
 
-```
-Flask
-opencv-python
-mediapipe
-numpy
-scikit-learn==1.0.2
-Pillow
-arabic-reshaper
-python-bidi
+```bash
+pip install --upgrade pip
 ```
 
-Install:
+---
+
+## 6️⃣ Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Jalankan Aplikasi
+---
+
+## 7️⃣ Jalankan Aplikasi
+
+```bash
+python app.py
+```
+
+Buka browser:
+
+```
+http://127.0.0.1:5000/
+```
+
+---
+
+# 🍎 Setup di macOS / Linux
+
+## 1️⃣ Install Python 3.10 (Jika Belum Ada)
+
+```bash
+brew install python@3.10
+```
+
+Cek versi:
+
+```bash
+python3.10 --version
+```
+
+---
+
+## 2️⃣ Masuk ke Folder Project
+
+```bash
+cd path/ke/SmartHijaiyah
+```
+
+---
+
+## 3️⃣ Buat Virtual Environment
+
+```bash
+python3.10 -m venv venv
+```
+
+---
+
+## 4️⃣ Aktifkan Virtual Environment
+
+```bash
+source venv/bin/activate
+```
+
+---
+
+## 5️⃣ Upgrade pip
+
+```bash
+pip install --upgrade pip
+```
+
+---
+
+## 6️⃣ Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 7️⃣ Jalankan Aplikasi
 
 ```bash
 python app.py
@@ -165,23 +269,48 @@ http://127.0.0.1:5000/
 
 ---
 
-## 📖 Cara Penggunaan
+# 🔁 Menjalankan Kembali
 
-1. Jalankan aplikasi.
-2. Buka halaman **Belajar**.
-3. Klik tombol **Mulai Kamera**.
-4. Izinkan akses kamera.
-5. Lakukan gerakan huruf Hijaiyah di depan kamera.
-6. Sistem akan menampilkan:
-   - Huruf Latin
-   - Huruf Arab
-   - Status LIVE 🔴
+Windows:
+```bash
+venv\Scripts\activate
+python app.py
+```
 
-Klik **Stop Kamera** untuk menghentikan sesi.
+Mac/Linux:
+```bash
+source venv/bin/activate
+python app.py
+```
 
 ---
 
-## 🧠 Informasi Model Machine Learning
+# ❌ Keluar dari Virtual Environment
+
+```bash
+deactivate
+```
+
+---
+
+# 🛡️ .gitignore (Penting)
+
+Pastikan file `.gitignore` berisi:
+
+```
+venv/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+.vscode/
+```
+
+Agar virtual environment tidak ikut ter-push ke repository.
+
+---
+
+# 🧠 Informasi Model Machine Learning
 
 - Model: Random Forest Classifier  
 - Input: 84 fitur (2 tangan × 21 landmark × 2 koordinat)  
@@ -190,22 +319,27 @@ Klik **Stop Kamera** untuk menghentikan sesi.
 
 ---
 
-## ⚠️ Troubleshooting
+# ⚠️ Troubleshooting
 
 ### Kamera Tidak Muncul
-- Pastikan tidak ada aplikasi lain menggunakan kamera.
-- Periksa izin akses kamera di browser.
-- Restart aplikasi.
+- Pastikan webcam tidak digunakan aplikasi lain
+- Periksa izin akses kamera di browser
+- Restart aplikasi
 
 ### Prediksi Tidak Akurat
-- Gunakan pencahayaan yang cukup.
-- Pastikan tangan terlihat jelas.
-- Hindari latar belakang yang terlalu ramai.
-- Jangan bergerak terlalu cepat.
+- Gunakan pencahayaan cukup
+- Pastikan tangan terlihat jelas
+- Hindari background ramai
+- Jangan bergerak terlalu cepat
+
+### Error Library / Dependency
+- Pastikan menggunakan Python 3.10
+- Gunakan virtual environment
+- Upgrade pip sebelum install
 
 ---
 
-## 🎓 Tujuan Pengembangan
+# 🎓 Tujuan Pengembangan
 
 - Media pembelajaran huruf Hijaiyah berbasis AI  
 - Implementasi Computer Vision  
@@ -214,20 +348,20 @@ Klik **Stop Kamera** untuk menghentikan sesi.
 
 ---
 
-## 🙌 Kontribusi
+# 🙌 Kontribusi
 
 Masukan dan saran sangat terbuka untuk pengembangan lebih lanjut.
 
 ---
 
-## 📜 Lisensi
+# 📜 Lisensi
 
 Proyek ini bersifat open-source.  
 Detail lisensi akan ditambahkan pada pembaruan berikutnya.
 
 ---
 
-## 🙏 Ucapan Terima Kasih
+# 🙏 Ucapan Terima Kasih
 
 Terima kasih kepada:
 - Flask
@@ -235,3 +369,7 @@ Terima kasih kepada:
 - MediaPipe
 - Scikit-learn
 - Komunitas Open Source
+
+---
+
+⭐ Jika project ini bermanfaat, jangan lupa beri star di repository!
