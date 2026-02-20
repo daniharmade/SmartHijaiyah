@@ -158,25 +158,14 @@ stopBtn.addEventListener('click', () => {
 
     if (!cameraActive) return;
 
-    // 🔥 PANGGIL BACKEND UNTUK STOP CAMERA
     fetch('/stop_camera')
         .then(() => {
 
-            webcam.src = "";
-            webcam.classList.add('hidden');
-            placeholder.classList.remove('hidden');
-            liveIndicator.classList.add('hidden');
+            // Delay kecil supaya backend sempat stop
+            setTimeout(() => {
+                window.location.reload();
+            }, 300);
 
-            cameraActive = false;
-
-            stopBtn.disabled = true;
-            stopBtn.classList.add("opacity-50","cursor-not-allowed");
-
-            startBtn.disabled = false;
-            startBtn.classList.remove("opacity-50","cursor-not-allowed");
-
-            detectedName.innerText = "Menunggu...";
-            detectedLetter.innerText = "-";
         });
 });
 

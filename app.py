@@ -20,6 +20,9 @@ hijaiyah_model = hijaiyah_model_dict['model']
 sibi_model_dict = pickle.load(open('./model/sibi.p', 'rb'))
 sibi_model = sibi_model_dict['model']
 
+bisindo_model_dict = pickle.load(open('./model/bisindo.p', 'rb'))
+bisindo_model = bisindo_model_dict['model']
+
 # Global variable untuk menyimpan prediksi terbaru
 current_prediction_hijaiyah = None
 current_prediction_sibi = None
@@ -35,7 +38,7 @@ mp_drawing = mp.solutions.drawing_utils
 
 hands = mp_hands.Hands(
     static_image_mode=False,
-    max_num_hands=1,
+    max_num_hands=2,
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5
 )
@@ -179,7 +182,10 @@ def gen_frames_hijaiyah():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
-# Sibi
+# ==============================
+# SIBI ALFABET
+# ==============================
+
 labels_sibi = {
     0: 'Default', 1: 'A', 2: 'B', 3: 'C', 4: 'D', 5:'E',
     6:'F', 7:'G', 8:'H', 9:'I', 10:'J', 11:'K', 12:'L',
@@ -253,6 +259,126 @@ def gen_frames_sibi():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
+# ==============================
+# BISINDO ALFABET (2 TANGAN)
+# ==============================
+
+labels_bisindo = {
+    0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F',
+    6: 'G', 7: 'H', 8: 'I', 9: 'J', 10: 'K', 11: 'L',
+    12: 'M', 13: 'N', 14: 'O', 15: 'P', 16: 'Q', 17: 'R',
+    18: 'S', 19: 'T', 20: 'U', 21: 'V', 22: 'W',
+    23: 'X', 24: 'Y', 25: 'Z'
+}
+
+# Tentukan kebutuhan tangan (mayoritas 2 tangan)
+hands_required_bisindo = {
+    'A': 2, 'B': 2, 'C': 1, 'D': 2, 'E': 1,
+    'F': 2, 'G': 2, 'H': 2, 'I': 1, 'J': 1,
+    'K': 2, 'L': 1, 'M': 2, 'N': 2, 'O': 1,
+    'P': 2, 'Q': 2, 'R': 1, 'S': 2, 'T': 2,
+    'U': 1, 'V': 1, 'W': 2, 'X': 2, 'Y': 2, 'Z': 1
+}
+
+current_prediction_bisindo = None
+
+def gen_frames_bisindo():
+    global current_prediction_bisindo
+
+    expected_features = 84  # 2 tangan × 21 landmark × 2
+
+    while camera_running:
+        success, frame = cap.read()
+        if not success:
+            break
+
+        H, W, _ = frame.shape
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = hands.process(frame_rgb)
+
+        data_aux = []
+        all_x = []
+        all_y = []
+
+        if results.multi_hand_landmarks:
+            num_hands = len(results.multi_hand_landmarks)
+
+            # Ambil maksimal 2 tangan
+            for hand_landmarks in results.multi_hand_landmarks[:2]:
+
+                mp_drawing.draw_landmarks(
+                    frame,
+                    hand_landmarks,
+                    mp_hands.HAND_CONNECTIONS
+                )
+
+                x_ = []
+                y_ = []
+
+                for lm in hand_landmarks.landmark:
+                    x_.append(lm.x)
+                    y_.append(lm.y)
+
+                if x_ and y_:
+                    min_x = min(x_)
+                    min_y = min(y_)
+
+                    for i in range(len(x_)):
+                        data_aux.append(x_[i] - min_x)
+                        data_aux.append(y_[i] - min_y)
+
+                    all_x.extend(x_)
+                    all_y.extend(y_)
+
+            # 🔥 Kalau cuma 1 tangan → tambahkan padding 0
+            if len(data_aux) == 42:
+                data_aux.extend([0.0] * 42)
+
+            # Pastikan panjangnya 84
+            if len(data_aux) == expected_features:
+                try:
+                    prediction = bisindo_model.predict([np.asarray(data_aux)])
+                    predicted_index = int(prediction[0])
+
+                    if predicted_index in labels_bisindo:
+                        predicted_char = labels_bisindo[predicted_index]
+                        required = hands_required_bisindo.get(predicted_char, 2)
+
+                        if num_hands >= required:
+                            current_prediction_bisindo = predicted_char
+                        else:
+                            current_prediction_bisindo = None
+
+                        if all_x and all_y:
+                            x1 = int(min(all_x) * W) - 10
+                            y1 = int(min(all_y) * H) - 10
+
+                            cv2.putText(
+                                frame,
+                                predicted_char,
+                                (x1, y1 - 10),
+                                cv2.FONT_HERSHEY_DUPLEX,
+                                1.5,
+                                (0, 140, 255),
+                                3
+                            )
+                    else:
+                        current_prediction_bisindo = None
+
+                except Exception as e:
+                    print("Prediction error BISINDO:", e)
+                    current_prediction_bisindo = None
+            else:
+                current_prediction_bisindo = None
+        else:
+            current_prediction_bisindo = None
+
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame_bytes = buffer.tobytes()
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+        
 # ==============================
 # Backend Dashboard
 # ==============================
@@ -375,6 +501,24 @@ def get_prediction_sibi():
 def stop_camera_route():
     stop_camera()
     return jsonify({"status": "stopped"})
+
+# ==============================
+# HALAMAN BISINDO
+# ==============================
+
+@app.route('/belajar-bisindo')
+def belajar_bisindo():
+    return render_template('belajar_bisindo.html')
+
+@app.route('/video_feed_bisindo')
+def video_feed_bisindo():
+    start_camera()  # WAJIB
+    return Response(gen_frames_bisindo(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/get_prediction_bisindo')
+def get_prediction_bisindo():
+    return jsonify({"prediction": current_prediction_bisindo})
 
 # ==============================
 # HALAMAN DASHBOARD
