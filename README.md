@@ -1,6 +1,14 @@
-# SmartHijaiyah – Website Interaktif Belajar Huruf Hijaiyah
+# SmartIsyarat – Platform Interaktif Pembelajaran Bahasa Isyarat Berbasis AI
 
-SmartHijaiyah adalah platform web interaktif berbasis Artificial Intelligence yang dirancang untuk membantu pengguna mempelajari huruf Hijaiyah melalui deteksi gerakan tangan secara real-time menggunakan kamera web dan teknologi Computer Vision.
+SmartIsyarat adalah platform web interaktif berbasis Artificial Intelligence yang dirancang untuk membantu pengguna mempelajari berbagai jenis bahasa isyarat secara modern dan inklusif.
+
+Platform ini mendukung:
+
+- Bahasa Isyarat Hijaiyah  
+- SIBI (Sistem Isyarat Bahasa Indonesia)  
+- BISINDO (Bahasa Isyarat Indonesia)  
+
+Sistem menggunakan deteksi gerakan tangan secara real-time melalui kamera dan teknologi Computer Vision untuk memberikan pengalaman belajar yang interaktif.
 
 ---
 
@@ -21,7 +29,7 @@ SmartHijaiyah adalah platform web interaktif berbasis Artificial Intelligence ya
   <img src="preview/dashboard.png" width="800">
 </p>
 
-### 🎥 Halaman Proses Belajar
+### 🎥 Halaman Proses Belajar (Live Camera)
 <p align="center">
   <img src="preview/proses-belajar.png" width="800">
 </p>
@@ -33,10 +41,11 @@ SmartHijaiyah adalah platform web interaktif berbasis Artificial Intelligence ya
 
 ---
 
-## 🌟 Deskripsi Singkat
+## 🌟 Deskripsi Proyek
 
-Proyek ini menyediakan media pembelajaran huruf Hijaiyah yang modern, interaktif, dan mudah diakses.  
-Pengguna dapat mempraktikkan gerakan isyarat huruf Hijaiyah di depan kamera, dan sistem akan memberikan hasil prediksi secara langsung menggunakan model Machine Learning.
+SmartIsyarat menyediakan media pembelajaran bahasa isyarat yang modern, interaktif, dan mudah diakses.
+
+Pengguna dapat mempraktikkan gerakan isyarat di depan kamera, dan sistem akan memberikan hasil prediksi secara langsung menggunakan model Machine Learning.
 
 Website ini dikembangkan sebagai implementasi Computer Vision dan Supervised Learning dalam bidang edukasi berbasis AI.
 
@@ -44,11 +53,11 @@ Website ini dikembangkan sebagai implementasi Computer Vision dan Supervised Lea
 
 ## ✨ Fitur Utama
 
-- 📖 Pembelajaran Huruf Hijaiyah Interaktif  
+- 📖 Pembelajaran Bahasa Isyarat Interaktif  
 - 🎥 Deteksi Gerakan Tangan Real-time  
-- 🤖 Klasifikasi Huruf Menggunakan Random Forest  
+- 🤖 Klasifikasi Isyarat Menggunakan Random Forest  
 - 🔴 Indikator LIVE Kamera  
-- 📝 Menampilkan Huruf Latin dan Arab  
+- 📝 Menampilkan Teks & Representasi Visual  
 - ✋ Mendukung Deteksi 1 atau 2 Tangan  
 - 📱 Desain Responsif (Desktop & Mobile)  
 - ❓ FAQ dan Panduan Penggunaan  
@@ -87,7 +96,7 @@ Website ini dikembangkan sebagai implementasi Computer Vision dan Supervised Lea
 ## 📁 Struktur Proyek
 
 ```
-SmartHijaiyah/
+SmartIsyarat/
 ├── app.py
 ├── model/
 │   └── model_rf1.p
@@ -95,10 +104,14 @@ SmartHijaiyah/
 │   ├── css/
 │   ├── js/
 │   ├── img/
-│   │   └── hijaiyah/
+│   │   ├── hijaiyah/
+│   │   ├── sibi/
+│   │   └── bisindo/
 ├── templates/
 │   ├── index.html
-│   └── belajar.html
+│   ├── belajar-hijaiyah.html
+│   ├── belajar-sibi.html
+│   └── belajar-bisindo.html
 ├── requirements.txt
 ├── .gitignore
 └── README.md
@@ -134,13 +147,13 @@ python --version
 ## 2️⃣ Masuk ke Folder Project
 
 ```bash
-cd path\ke\SmartHijaiyah
+cd path\ke\SmartIsyarat
 ```
 
 Contoh:
 
 ```bash
-cd D:\Project\SmartHijaiyah
+cd D:\Project\SmartIsyarat
 ```
 
 ---
@@ -218,7 +231,7 @@ python3.10 --version
 ## 2️⃣ Masuk ke Folder Project
 
 ```bash
-cd path/ke/SmartHijaiyah
+cd path/ke/SmartIsyarat
 ```
 
 ---
@@ -293,23 +306,6 @@ deactivate
 
 ---
 
-# 🛡️ .gitignore (Penting)
-
-Pastikan file `.gitignore` berisi:
-
-```
-venv/
-__pycache__/
-*.pyc
-.env
-.DS_Store
-.vscode/
-```
-
-Agar virtual environment tidak ikut ter-push ke repository.
-
----
-
 # 🧠 Informasi Model Machine Learning
 
 - Model: Random Forest Classifier  
@@ -339,11 +335,12 @@ Agar virtual environment tidak ikut ter-push ke repository.
 
 ---
 
-# 🎓 Tujuan Pengembangan
+# 🎯 Tujuan Pengembangan
 
-- Media pembelajaran huruf Hijaiyah berbasis AI  
+- Media pembelajaran bahasa isyarat berbasis AI  
 - Implementasi Computer Vision  
 - Implementasi Supervised Learning  
+- Platform inklusif untuk masyarakat luas  
 - Proyek penelitian / tugas akhir  
 
 ---
