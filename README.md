@@ -335,6 +335,19 @@ deactivate
 
 ---
 
+# 👥 Tim Pengembang
+
+Project **SmartIsyarat** dikembangkan oleh tim berikut:
+
+## 🎓 Supervisor
+- **Dr. Rice Novita, S.Komn., M.Kom**
+
+## 💻 Engineer
+1. **Dani Harmade** – Main Contributor  
+2. **Naufal Safiq Tama**
+
+---
+
 # 🎯 Tujuan Pengembangan
 
 - Media pembelajaran bahasa isyarat berbasis AI  
