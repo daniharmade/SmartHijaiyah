@@ -28,8 +28,6 @@ bisindo_model = bisindo_model_dict['model']
 current_prediction_hijaiyah = None
 current_prediction_sibi = None
 
-camera_running = False
-
 # Inisialisasi MediaPipe
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -40,6 +38,15 @@ hands = mp_hands.Hands(
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5
 )
+
+def get_hands():
+    return mp_hands.Hands(
+        static_image_mode=True,   # 🔥 penting untuk API
+        max_num_hands=2,
+        model_complexity=0,       # 🔥 TURUNKAN BEBAN
+        min_detection_confidence=0.6,
+        min_tracking_confidence=0.6
+    )
 
 # Label Prediksi
 labels_hijaiyah = {
@@ -60,8 +67,6 @@ FONT_PATH = "./static/fonts/NotoNaskhArabic-Regular.ttf"
 # CAMERA CONTROL
 # ==============================
 
-camera_running = False
-cap = None
 
 def start_camera():
     global cap, camera_running
@@ -75,8 +80,6 @@ def start_camera():
 
         if not cap.isOpened():
             print("⚠️ Camera tidak tersedia")
-            cap = None
-            camera_running = False
             return
 
         cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
@@ -86,14 +89,10 @@ def start_camera():
 
     except Exception as e:
         print(f"❌ Error membuka camera: {e}")
-        cap = None
-        camera_running = False
 
 
 def stop_camera():
     global cap, camera_running
-
-    camera_running = False
 
     if cap is not None:
         try:
@@ -101,8 +100,6 @@ def stop_camera():
             print("🛑 Camera dihentikan")
         except Exception as e:
             print(f"❌ Error saat release camera: {e}")
-
-    cap = None
 
 # ==============================
 # 2. Helper Function
@@ -147,12 +144,15 @@ def gen_frames_hijaiyah():
         if not success:
             break
 
+        frame = cv2.resize(frame, (320, 240))  # 🔥 TAMBAH INI
+
         data_aux = []
         x_ = []
         y_ = []
 
         H, W, _ = frame.shape
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
         results = hands.process(frame_rgb)
 
         if results.multi_hand_landmarks:
@@ -225,8 +225,11 @@ def gen_frames_sibi():
 
     while camera_running:
         success, frame = cap.read()
+
         if not success:
             break
+
+        frame = cv2.resize(frame, (320, 240))  # 🔥 TAMBAH INI
 
         H, W, _ = frame.shape
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -309,15 +312,23 @@ current_prediction_bisindo = None
 def gen_frames_bisindo():
     global current_prediction_bisindo
 
-    expected_features = 84  # 2 tangan × 21 landmark × 2
+    frame_skip = 2
+    counter = 0
 
     while camera_running:
         success, frame = cap.read()
         if not success:
             break
 
+        counter += 1
+        if counter % frame_skip != 0:
+            continue
+
+        frame = cv2.resize(frame, (320, 240))
+
         H, W, _ = frame.shape
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
         results = hands.process(frame_rgb)
 
         data_aux = []
@@ -325,9 +336,7 @@ def gen_frames_bisindo():
         all_y = []
 
         if results.multi_hand_landmarks:
-            num_hands = len(results.multi_hand_landmarks)
 
-            # Ambil maksimal 2 tangan
             for hand_landmarks in results.multi_hand_landmarks[:2]:
 
                 mp_drawing.draw_landmarks(
@@ -343,65 +352,45 @@ def gen_frames_bisindo():
                     x_.append(lm.x)
                     y_.append(lm.y)
 
-                if x_ and y_:
-                    min_x = min(x_)
-                    min_y = min(y_)
+                min_x = min(x_)
+                min_y = min(y_)
 
-                    for i in range(len(x_)):
-                        data_aux.append(x_[i] - min_x)
-                        data_aux.append(y_[i] - min_y)
+                for i in range(len(x_)):
+                    data_aux.append(x_[i] - min_x)
+                    data_aux.append(y_[i] - min_y)
 
-                    all_x.extend(x_)
-                    all_y.extend(y_)
+                all_x.extend(x_)
+                all_y.extend(y_)
 
-            # 🔥 Kalau cuma 1 tangan → tambahkan padding 0
             if len(data_aux) == 42:
                 data_aux.extend([0.0] * 42)
 
-            # Pastikan panjangnya 84
-            if len(data_aux) == expected_features:
-                try:
-                    prediction = bisindo_model.predict([np.asarray(data_aux)])
-                    predicted_index = int(prediction[0])
+            if len(data_aux) == 84:
+                prediction = bisindo_model.predict([np.asarray(data_aux)])
+                predicted_index = int(prediction[0])
 
-                    if predicted_index in labels_bisindo:
-                        predicted_char = labels_bisindo[predicted_index]
-                        required = hands_required_bisindo.get(predicted_char, 2)
+                if predicted_index in labels_bisindo:
+                    predicted_char = labels_bisindo[predicted_index]
+                    current_prediction_bisindo = predicted_char
 
-                        if num_hands >= required:
-                            current_prediction_bisindo = predicted_char
-                        else:
-                            current_prediction_bisindo = None
+                    x1 = int(min(all_x) * W)
+                    y1 = int(min(all_y) * H)
 
-                        if all_x and all_y:
-                            x1 = int(min(all_x) * W) - 10
-                            y1 = int(min(all_y) * H) - 10
-
-                            cv2.putText(
-                                frame,
-                                predicted_char,
-                                (x1, y1 - 10),
-                                cv2.FONT_HERSHEY_DUPLEX,
-                                1.5,
-                                (0, 140, 255),
-                                3
-                            )
-                    else:
-                        current_prediction_bisindo = None
-
-                except Exception as e:
-                    print("Prediction error BISINDO:", e)
-                    current_prediction_bisindo = None
-            else:
-                current_prediction_bisindo = None
+                    cv2.putText(
+                        frame,
+                        predicted_char,
+                        (x1, y1),
+                        cv2.FONT_HERSHEY_DUPLEX,
+                        1,
+                        (0, 140, 255),
+                        2
+                    )
         else:
             current_prediction_bisindo = None
 
         ret, buffer = cv2.imencode('.jpg', frame)
-        frame_bytes = buffer.tobytes()
-
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
         
 # ==============================
 # Backend Dashboard
@@ -517,6 +506,7 @@ def predict_hijaiyah():
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         results = hands.process(frame_rgb)
 
@@ -597,8 +587,11 @@ def predict_sibi():
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_rgb.flags.writeable = False   # 🔥 TAMBAH INI
 
+        hands = get_hands()
         results = hands.process(frame_rgb)
+        hands.close()
 
         prediction_result = None
 
@@ -651,7 +644,6 @@ def predict_sibi():
 def belajar_bisindo():
     return render_template('belajar_bisindo.html')
 
-
 @app.route('/predict_bisindo', methods=['POST'])
 def predict_bisindo():
 
@@ -671,8 +663,11 @@ def predict_bisindo():
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # frame_rgb.flags.writeable = False   # 🔥 TAMBAH INI
 
+        hands = get_hands()
         results = hands.process(frame_rgb)
+        hands.close()
 
         prediction_result = None
 
@@ -942,30 +937,30 @@ def page_not_found(e):
 # 5. Run App Development
 # ==============================
 
-# if __name__ == '__main__':
-#     host = "127.0.0.1"
-#     port = 5000
+if __name__ == '__main__':
+    host = "127.0.0.1"
+    port = 5000
 
-#     print("=" * 50)
-#     print("✅ Website Berhasil Dijalankan")
-#     print(f"🌐 Akses di: http://{host}:{port}/")
-#     print("=" * 50)
+    print("=" * 50)
+    print("✅ Website Berhasil Dijalankan")
+    print(f"🌐 Akses di: http://{host}:{port}/")
+    print("=" * 50)
 
-#     app.run(debug=True, host=host, port=port)
+    app.run(debug=True, host=host, port=port)
 
 # ==============================
 # 5. Run App Deploy
 # ==============================
 
-if __name__ == '__main__':
-    import os
+# if __name__ == '__main__':
+#     import os
 
-    host = "0.0.0.0"
-    port = int(os.environ.get("PORT", 5000))
+#     host = "0.0.0.0"
+#     port = int(os.environ.get("PORT", 5000))
 
-    print("=" * 50)
-    print("✅ Website Berhasil Dijalankan")
-    print(f"🌐 Server running on: {host}:{port}")
-    print("=" * 50)
+#     print("=" * 50)
+#     print("✅ Website Berhasil Dijalankan")
+#     print(f"🌐 Server running on: {host}:{port}")
+#     print("=" * 50)
 
-    app.run(host=host, port=port)
+#     app.run(host=host, port=port)

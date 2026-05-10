@@ -136,10 +136,16 @@ const detectionMsg = document.getElementById('detection-msg');
 const detectedName = document.getElementById('detected-name');
 const detectedLetter = document.getElementById('detected-letter');
 
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
 let cameraActive = false;
 let cooldown = false;
+let intervalId = null; // 🔥 IMPORTANT
 
+// =============================
 // START CAMERA
+// =============================
 startBtn.addEventListener('click', async () => {
 
     if (cameraActive) return;
@@ -173,65 +179,48 @@ startBtn.addEventListener('click', async () => {
     }
 });
 
-// STOP CAMERA
+// =============================
+// STOP CAMERA (FIXED)
+// =============================
 stopBtn.addEventListener('click', () => {
 
     if (!cameraActive) return;
 
-    fetch('/stop_camera')
-        .then(() => {
+    const stream = webcam.srcObject;
 
-            // Delay kecil supaya backend sempat stop
-            setTimeout(() => {
-                window.location.reload();
-            }, 300);
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
 
-        });
+    webcam.srcObject = null;
+
+    webcam.classList.add('hidden');
+    placeholder.classList.remove('hidden');
+    liveIndicator.classList.add('hidden');
+
+    // 🔥 STOP INTERVAL (IMPORTANT FIX)
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+    }
+
+    cameraActive = false;
+
+    startBtn.disabled = false;
+    startBtn.classList.remove("opacity-50","cursor-not-allowed");
+
+    stopBtn.disabled = true;
+    stopBtn.classList.add("opacity-50","cursor-not-allowed");
 });
 
-// CHECK PREDICTION
-function checkPrediction() {
-
-    if (!cameraActive) return;
-
-    fetch('/get_prediction_bisindo')
-        .then(res => res.json())
-        .then(data => {
-
-            const predicted = data.prediction;
-
-            if (predicted && !cooldown) {
-                showDetection(predicted);
-            }
-        });
-}
-
-function showDetection(letter) {
-
-    cooldown = true;
-
-    detectedName.innerText = "Isyarat " + letter;
-    detectedLetter.innerText = letter;
-
-    detectionMsg.querySelector('span').innerText =
-        `Terdeteksi: ${letter}`;
-
-    detectionMsg.style.opacity = '1';
-
-    setTimeout(() => {
-        detectionMsg.style.opacity = '0';
-        cooldown = false;
-    }, 2000);
-}
-
-setInterval(checkPrediction, 600);
-
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-
+// =============================
+// SEND FRAMES TO BACKEND
+// =============================
 function startSendingFrames() {
 
-    setInterval(async () => {
+    if (intervalId) clearInterval(intervalId);
+
+    intervalId = setInterval(async () => {
 
         if (!cameraActive) return;
 
@@ -249,9 +238,7 @@ function startSendingFrames() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    image: imageData
-                })
+                body: JSON.stringify({ image: imageData })
             });
 
             const data = await response.json();
@@ -264,7 +251,28 @@ function startSendingFrames() {
             console.error(err);
         }
 
-    }, 500);
+    }, 700); // 🔥 naikkan sedikit biar ringan di Render
+}
+
+// =============================
+// SHOW RESULT
+// =============================
+function showDetection(letter) {
+
+    cooldown = true;
+
+    detectedName.innerText = "Isyarat " + letter;
+    detectedLetter.innerText = letter;
+
+    detectionMsg.querySelector('span').innerText =
+        `Terdeteksi: ${letter}`;
+
+    detectionMsg.style.opacity = '1';
+
+    setTimeout(() => {
+        detectionMsg.style.opacity = '0';
+        cooldown = false;
+    }, 2000);
 }
 
 </script>

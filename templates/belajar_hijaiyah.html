@@ -145,6 +145,7 @@ const ctx = canvas.getContext('2d');
 
 let cameraActive = false;
 let cooldown = false;
+let intervalId = null;
 
 // Mapping huruf lengkap
 const arabicMap = {
@@ -203,6 +204,11 @@ stopBtn.addEventListener('click', () => {
         stream.getTracks().forEach(track => track.stop());
     }
 
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+    }
+
     webcam.srcObject = null;
 
     webcam.classList.add('hidden');
@@ -220,7 +226,9 @@ stopBtn.addEventListener('click', () => {
 
 function startSendingFrames() {
 
-    setInterval(async () => {
+    if (intervalId) clearInterval(intervalId);
+
+    intervalId = setInterval(async () => {
 
         if (!cameraActive) return;
 
@@ -238,9 +246,7 @@ function startSendingFrames() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    image: imageData
-                })
+                body: JSON.stringify({ image: imageData })
             });
 
             const data = await response.json();
@@ -253,7 +259,7 @@ function startSendingFrames() {
             console.error(err);
         }
 
-    }, 500);
+    }, 700); // 🔥 naikkan sedikit biar ringan (500 terlalu berat di Render)
 }
 
 function showDetection(name) {
@@ -273,8 +279,6 @@ function showDetection(name) {
         cooldown = false;
     }, 2000);
 }
-
-setInterval(checkPrediction, 600);
 
 </script>
 
