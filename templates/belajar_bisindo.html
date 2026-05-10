@@ -52,8 +52,13 @@
                 <p>Kamera belum aktif</p>
             </div>
 
-            <img id="webcam"
-                 class="w-full h-full object-cover hidden" />
+            <video id="webcam"
+                autoplay
+                playsinline
+                class="w-full h-full object-cover hidden">
+            </video>
+
+            <canvas id="canvas" class="hidden"></canvas>
 
             <div id="live-indicator"
                  class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-2 hidden">
@@ -135,22 +140,37 @@ let cameraActive = false;
 let cooldown = false;
 
 // START CAMERA
-startBtn.addEventListener('click', () => {
+startBtn.addEventListener('click', async () => {
 
     if (cameraActive) return;
 
-    webcam.src = "{{ url_for('video_feed_bisindo') }}";
-    webcam.classList.remove('hidden');
-    placeholder.classList.add('hidden');
-    liveIndicator.classList.remove('hidden');
+    try {
 
-    cameraActive = true;
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+        });
 
-    startBtn.disabled = true;
-    startBtn.classList.add("opacity-50","cursor-not-allowed");
+        webcam.srcObject = stream;
 
-    stopBtn.disabled = false;
-    stopBtn.classList.remove("opacity-50","cursor-not-allowed");
+        webcam.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        liveIndicator.classList.remove('hidden');
+
+        cameraActive = true;
+
+        startBtn.disabled = true;
+        startBtn.classList.add("opacity-50","cursor-not-allowed");
+
+        stopBtn.disabled = false;
+        stopBtn.classList.remove("opacity-50","cursor-not-allowed");
+
+        startSendingFrames();
+
+    } catch (err) {
+        alert("Tidak bisa mengakses kamera");
+        console.error(err);
+    }
 });
 
 // STOP CAMERA
@@ -205,6 +225,47 @@ function showDetection(letter) {
 }
 
 setInterval(checkPrediction, 600);
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+function startSendingFrames() {
+
+    setInterval(async () => {
+
+        if (!cameraActive) return;
+
+        canvas.width = webcam.videoWidth;
+        canvas.height = webcam.videoHeight;
+
+        ctx.drawImage(webcam, 0, 0);
+
+        const imageData = canvas.toDataURL('image/jpeg');
+
+        try {
+
+            const response = await fetch('/predict_bisindo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    image: imageData
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.prediction && !cooldown) {
+                showDetection(data.prediction);
+            }
+
+        } catch (err) {
+            console.error(err);
+        }
+
+    }, 500);
+}
 
 </script>
 

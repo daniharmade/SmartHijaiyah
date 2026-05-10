@@ -54,8 +54,13 @@
             </div>
 
             <!-- Stream -->
-            <img id="webcam"
-                 class="w-full h-full object-cover hidden" />
+            <video id="webcam"
+                autoplay
+                playsinline
+                class="w-full h-full object-cover hidden">
+            </video>
+
+            <canvas id="canvas" class="hidden"></canvas>
 
             <!-- LIVE Indicator -->
             <div id="live-indicator"
@@ -135,6 +140,9 @@ const detectionMsg = document.getElementById('detection-msg');
 const detectedName = document.getElementById('detected-name');
 const detectedArabic = document.getElementById('detected-arabic');
 
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
 let cameraActive = false;
 let cooldown = false;
 
@@ -149,22 +157,39 @@ const arabicMap = {
 };
 
 // START CAMERA
-startBtn.addEventListener('click', () => {
+startBtn.addEventListener('click', async () => {
 
     if (cameraActive) return;
 
-    webcam.src = "{{ url_for('video_feed_hijaiyah') }}";
-    webcam.classList.remove('hidden');
-    placeholder.classList.add('hidden');
-    liveIndicator.classList.remove('hidden');
+    try {
 
-    cameraActive = true;
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+        });
 
-    startBtn.disabled = true;
-    startBtn.classList.add("opacity-50","cursor-not-allowed");
+        webcam.srcObject = stream;
 
-    stopBtn.disabled = false;
-    stopBtn.classList.remove("opacity-50","cursor-not-allowed");
+        webcam.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        liveIndicator.classList.remove('hidden');
+
+        cameraActive = true;
+
+        startBtn.disabled = true;
+        startBtn.classList.add("opacity-50","cursor-not-allowed");
+
+        stopBtn.disabled = false;
+        stopBtn.classList.remove("opacity-50","cursor-not-allowed");
+
+        startSendingFrames();
+
+    } catch (err) {
+
+        alert("Tidak bisa mengakses kamera");
+        console.error(err);
+
+    }
 });
 
 // STOP CAMERA
@@ -172,32 +197,63 @@ stopBtn.addEventListener('click', () => {
 
     if (!cameraActive) return;
 
-    fetch('/stop_camera')
-        .then(() => {
+    const stream = webcam.srcObject;
 
-            // Delay kecil supaya backend sempat stop
-            setTimeout(() => {
-                window.location.reload();
-            }, 300);
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
 
-        });
+    webcam.srcObject = null;
+
+    webcam.classList.add('hidden');
+    placeholder.classList.remove('hidden');
+    liveIndicator.classList.add('hidden');
+
+    cameraActive = false;
+
+    startBtn.disabled = false;
+    startBtn.classList.remove("opacity-50","cursor-not-allowed");
+
+    stopBtn.disabled = true;
+    stopBtn.classList.add("opacity-50","cursor-not-allowed");
 });
 
-// CHECK PREDICTION
-function checkPrediction() {
+function startSendingFrames() {
 
-    if (!cameraActive) return;
+    setInterval(async () => {
 
-    fetch('/get_prediction_hijaiyah')
-        .then(res => res.json())
-        .then(data => {
+        if (!cameraActive) return;
 
-            const predicted = data.prediction;
+        canvas.width = webcam.videoWidth;
+        canvas.height = webcam.videoHeight;
 
-            if (predicted && !cooldown) {
-                showDetection(predicted);
+        ctx.drawImage(webcam, 0, 0);
+
+        const imageData = canvas.toDataURL('image/jpeg');
+
+        try {
+
+            const response = await fetch('/predict_hijaiyah', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    image: imageData
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.prediction && !cooldown) {
+                showDetection(data.prediction);
             }
-        });
+
+        } catch (err) {
+            console.error(err);
+        }
+
+    }, 500);
 }
 
 function showDetection(name) {

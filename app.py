@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 from bidi.algorithm import get_display
 import sqlite3
 from flask import request, redirect, url_for
+import base64
 
 app = Flask(__name__)
 
@@ -28,9 +29,6 @@ current_prediction_hijaiyah = None
 current_prediction_sibi = None
 
 camera_running = False
-
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
 # Inisialisasi MediaPipe
 mp_hands = mp.solutions.hands
@@ -62,19 +60,48 @@ FONT_PATH = "./static/fonts/NotoNaskhArabic-Regular.ttf"
 # CAMERA CONTROL
 # ==============================
 
+camera_running = False
+cap = None
+
 def start_camera():
     global cap, camera_running
-    if not camera_running:
+
+    # Hindari buka camera berulang
+    if camera_running:
+        return
+
+    try:
         cap = cv2.VideoCapture(0)
+
+        if not cap.isOpened():
+            print("⚠️ Camera tidak tersedia")
+            cap = None
+            camera_running = False
+            return
+
         cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
         camera_running = True
+        print("✅ Camera berhasil dijalankan")
+
+    except Exception as e:
+        print(f"❌ Error membuka camera: {e}")
+        cap = None
+        camera_running = False
 
 
 def stop_camera():
     global cap, camera_running
+
     camera_running = False
-    if cap is not None and cap.isOpened():
-        cap.release()
+
+    if cap is not None:
+        try:
+            cap.release()
+            print("🛑 Camera dihentikan")
+        except Exception as e:
+            print(f"❌ Error saat release camera: {e}")
+
     cap = None
 
 # ==============================
@@ -105,7 +132,6 @@ def draw_arabic_text(img, text, position, font_size=40):
 
     except:
         return img
-
 
 # ==============================
 # 3. Video Stream Generator
@@ -196,8 +222,6 @@ labels_sibi = {
 
 def gen_frames_sibi():
     global current_prediction_sibi
-
-    # cap = cv2.VideoCapture(0)
 
     while camera_running:
         success, frame = cap.read()
@@ -466,19 +490,88 @@ def developer():
 # ==============================
 # HALAMAN HIJAIYAH
 # ==============================
+
+import base64
+
 @app.route('/belajar-hijaiyah')
 def belajar_hijaiyah():
     return render_template('belajar_hijaiyah.html')
 
-@app.route('/video_feed_hijaiyah')
-def video_feed_hijaiyah():
-    start_camera()  # 🔥 WAJIB
-    return Response(gen_frames_hijaiyah(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/get_prediction_hijaiyah')
-def get_prediction_hijaiyah():
-    return jsonify({"prediction": current_prediction_hijaiyah})
+@app.route('/predict_hijaiyah', methods=['POST'])
+def predict_hijaiyah():
+
+    try:
+
+        data = request.json['image']
+
+        # Ambil base64 image
+        encoded_data = data.split(',')[1]
+
+        # Convert ke OpenCV image
+        np_arr = np.frombuffer(
+            base64.b64decode(encoded_data),
+            np.uint8
+        )
+
+        frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        results = hands.process(frame_rgb)
+
+        prediction_result = None
+
+        if results.multi_hand_landmarks:
+
+            hand_landmarks = results.multi_hand_landmarks[0]
+
+            data_aux = []
+            x_ = []
+            y_ = []
+
+            for lm in hand_landmarks.landmark:
+                x_.append(lm.x)
+                y_.append(lm.y)
+
+            min_x = min(x_)
+            min_y = min(y_)
+
+            for i in range(len(x_)):
+                data_aux.append(x_[i] - min_x)
+                data_aux.append(y_[i] - min_y)
+
+            # 21 landmark × 2 = 42 feature
+            if len(data_aux) == 42:
+
+                prediction = hijaiyah_model.predict(
+                    [np.asarray(data_aux)]
+                )
+
+                predicted_index = int(prediction[0])
+
+                if predicted_index in labels_hijaiyah:
+
+                    predicted_character = labels_hijaiyah[predicted_index]
+
+                    # Ambil nama huruf saja
+                    prediction_result = (
+                        predicted_character
+                        .split("(")[1]
+                        .replace(")", "")
+                    )
+
+        return jsonify({
+            "prediction": prediction_result
+        })
+
+    except Exception as e:
+
+        print("ERROR predict_hijaiyah:", e)
+
+        return jsonify({
+            "prediction": None
+        })
 
 # ==============================
 # HALAMAN SIBI
@@ -487,20 +580,68 @@ def get_prediction_hijaiyah():
 def belajar_sibi():
     return render_template('belajar_sibi.html')
 
-@app.route('/video_feed_sibi')
-def video_feed_sibi():
-    start_camera()  # 🔥 WAJIB
-    return Response(gen_frames_sibi(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route('/predict_sibi', methods=['POST'])
+def predict_sibi():
 
-@app.route('/get_prediction_sibi')
-def get_prediction_sibi():
-    return jsonify({"prediction": current_prediction_sibi})
+    try:
 
-@app.route('/stop_camera')
-def stop_camera_route():
-    stop_camera()
-    return jsonify({"status": "stopped"})
+        data = request.json['image']
+
+        encoded_data = data.split(',')[1]
+
+        np_arr = np.frombuffer(
+            base64.b64decode(encoded_data),
+            np.uint8
+        )
+
+        frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        results = hands.process(frame_rgb)
+
+        prediction_result = None
+
+        if results.multi_hand_landmarks:
+
+            hand_landmarks = results.multi_hand_landmarks[0]
+
+            data_aux = []
+            x_ = []
+            y_ = []
+
+            for lm in hand_landmarks.landmark:
+                x_.append(lm.x)
+                y_.append(lm.y)
+
+            min_x = min(x_)
+            min_y = min(y_)
+
+            for i in range(len(x_)):
+                data_aux.append(x_[i] - min_x)
+                data_aux.append(y_[i] - min_y)
+
+            if len(data_aux) == 42:
+
+                prediction = sibi_model.predict(
+                    [np.asarray(data_aux)]
+                )
+
+                predicted_index = int(prediction[0])
+
+                if predicted_index in labels_sibi:
+                    prediction_result = labels_sibi[predicted_index]
+
+        return jsonify({
+            "prediction": prediction_result
+        })
+
+    except Exception as e:
+        print("ERROR predict_sibi:", e)
+
+        return jsonify({
+            "prediction": None
+        })
 
 # ==============================
 # HALAMAN BISINDO
@@ -510,15 +651,97 @@ def stop_camera_route():
 def belajar_bisindo():
     return render_template('belajar_bisindo.html')
 
-@app.route('/video_feed_bisindo')
-def video_feed_bisindo():
-    start_camera()  # WAJIB
-    return Response(gen_frames_bisindo(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/get_prediction_bisindo')
-def get_prediction_bisindo():
-    return jsonify({"prediction": current_prediction_bisindo})
+@app.route('/predict_bisindo', methods=['POST'])
+def predict_bisindo():
+
+    try:
+
+        data = request.json['image']
+
+        # Ambil base64 image
+        encoded_data = data.split(',')[1]
+
+        # Convert ke OpenCV image
+        np_arr = np.frombuffer(
+            base64.b64decode(encoded_data),
+            np.uint8
+        )
+
+        frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        results = hands.process(frame_rgb)
+
+        prediction_result = None
+
+        if results.multi_hand_landmarks:
+
+            data_aux = []
+            all_x = []
+            all_y = []
+
+            num_hands = len(results.multi_hand_landmarks)
+
+            # Maksimal 2 tangan
+            for hand_landmarks in results.multi_hand_landmarks[:2]:
+
+                x_ = []
+                y_ = []
+
+                for lm in hand_landmarks.landmark:
+                    x_.append(lm.x)
+                    y_.append(lm.y)
+
+                if x_ and y_:
+
+                    min_x = min(x_)
+                    min_y = min(y_)
+
+                    for i in range(len(x_)):
+                        data_aux.append(x_[i] - min_x)
+                        data_aux.append(y_[i] - min_y)
+
+                    all_x.extend(x_)
+                    all_y.extend(y_)
+
+            # Jika 1 tangan → padding
+            if len(data_aux) == 42:
+                data_aux.extend([0.0] * 42)
+
+            # Pastikan 84 feature
+            if len(data_aux) == 84:
+
+                prediction = bisindo_model.predict(
+                    [np.asarray(data_aux)]
+                )
+
+                predicted_index = int(prediction[0])
+
+                if predicted_index in labels_bisindo:
+
+                    predicted_char = labels_bisindo[predicted_index]
+
+                    required = hands_required_bisindo.get(
+                        predicted_char,
+                        2
+                    )
+
+                    if num_hands >= required:
+                        prediction_result = predicted_char
+
+        return jsonify({
+            "prediction": prediction_result
+        })
+
+    except Exception as e:
+
+        print("ERROR predict_bisindo:", e)
+
+        return jsonify({
+            "prediction": None
+        })
 
 # ==============================
 # HALAMAN DASHBOARD
@@ -719,30 +942,30 @@ def page_not_found(e):
 # 5. Run App Development
 # ==============================
 
-# if __name__ == '__main__':
-#     host = "127.0.0.1"
-#     port = 5000
+if __name__ == '__main__':
+    host = "127.0.0.1"
+    port = 5000
 
-#     print("=" * 50)
-#     print("✅ Website Berhasil Dijalankan")
-#     print(f"🌐 Akses di: http://{host}:{port}/")
-#     print("=" * 50)
+    print("=" * 50)
+    print("✅ Website Berhasil Dijalankan")
+    print(f"🌐 Akses di: http://{host}:{port}/")
+    print("=" * 50)
 
-#     app.run(debug=True, host=host, port=port)
+    app.run(debug=True, host=host, port=port)
 
 # ==============================
 # 5. Run App Deploy
 # ==============================
 
-if __name__ == '__main__':
-    import os
+# if __name__ == '__main__':
+#     import os
 
-    host = "0.0.0.0"
-    port = int(os.environ.get("PORT", 5000))
+#     host = "0.0.0.0"
+#     port = int(os.environ.get("PORT", 5000))
 
-    print("=" * 50)
-    print("✅ Website Berhasil Dijalankan")
-    print(f"🌐 Server running on: {host}:{port}")
-    print("=" * 50)
+#     print("=" * 50)
+#     print("✅ Website Berhasil Dijalankan")
+#     print(f"🌐 Server running on: {host}:{port}")
+#     print("=" * 50)
 
-    app.run(host=host, port=port)
+#     app.run(host=host, port=port)

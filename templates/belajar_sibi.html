@@ -52,8 +52,13 @@
                 <p>Kamera belum aktif</p>
             </div>
 
-            <img id="webcam"
-                 class="w-full h-full object-cover hidden" />
+            <video id="webcam"
+                autoplay
+                playsinline
+                class="w-full h-full object-cover hidden">
+            </video>
+
+            <canvas id="canvas" class="hidden"></canvas>
 
             <div id="live-indicator"
                  class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-2 hidden">
@@ -131,26 +136,44 @@ const detectionMsg = document.getElementById('detection-msg');
 const detectedName = document.getElementById('detected-name');
 const detectedLetter = document.getElementById('detected-letter');
 
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d');
+
 let cameraActive = false;
 let cooldown = false;
 
 // START CAMERA
-startBtn.addEventListener('click', () => {
+startBtn.addEventListener('click', async () => {
 
     if (cameraActive) return;
 
-    webcam.src = "{{ url_for('video_feed_sibi') }}";
-    webcam.classList.remove('hidden');
-    placeholder.classList.add('hidden');
-    liveIndicator.classList.remove('hidden');
+    try {
 
-    cameraActive = true;
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+        });
 
-    startBtn.disabled = true;
-    startBtn.classList.add("opacity-50","cursor-not-allowed");
+        webcam.srcObject = stream;
 
-    stopBtn.disabled = false;
-    stopBtn.classList.remove("opacity-50","cursor-not-allowed");
+        webcam.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        liveIndicator.classList.remove('hidden');
+
+        cameraActive = true;
+
+        startBtn.disabled = true;
+        startBtn.classList.add("opacity-50","cursor-not-allowed");
+
+        stopBtn.disabled = false;
+        stopBtn.classList.remove("opacity-50","cursor-not-allowed");
+
+        startSendingFrames();
+
+    } catch (err) {
+        alert("Kamera tidak bisa diakses");
+        console.error(err);
+    }
 });
 
 // STOP CAMERA
@@ -169,21 +192,42 @@ stopBtn.addEventListener('click', () => {
         });
 });
 
-// CHECK PREDICTION
-function checkPrediction() {
+function startSendingFrames() {
 
-    if (!cameraActive) return;
+    setInterval(async () => {
 
-    fetch('/get_prediction_sibi')
-        .then(res => res.json())
-        .then(data => {
+        if (!cameraActive) return;
 
-            const predicted = data.prediction;
+        canvas.width = webcam.videoWidth;
+        canvas.height = webcam.videoHeight;
 
-            if (predicted && !cooldown) {
-                showDetection(predicted);
+        ctx.drawImage(webcam, 0, 0);
+
+        const imageData = canvas.toDataURL('image/jpeg');
+
+        try {
+
+            const response = await fetch('/predict_sibi', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    image: imageData
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.prediction && !cooldown) {
+                showDetection(data.prediction);
             }
-        });
+
+        } catch (err) {
+            console.error(err);
+        }
+
+    }, 500);
 }
 
 function showDetection(letter) {
@@ -203,8 +247,6 @@ function showDetection(letter) {
         cooldown = false;
     }, 2000);
 }
-
-setInterval(checkPrediction, 600);
 
 </script>
 
