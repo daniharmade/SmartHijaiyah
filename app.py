@@ -716,16 +716,33 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 # ==============================
-# 5. Run App
+# 5. Run App Development
+# ==============================
+
+# if __name__ == '__main__':
+#     host = "127.0.0.1"
+#     port = 5000
+
+#     print("=" * 50)
+#     print("✅ Website Berhasil Dijalankan")
+#     print(f"🌐 Akses di: http://{host}:{port}/")
+#     print("=" * 50)
+
+#     app.run(debug=True, host=host, port=port)
+
+# ==============================
+# 5. Run App Deploy
 # ==============================
 
 if __name__ == '__main__':
-    host = "127.0.0.1"
-    port = 5000
+    import os
+
+    host = "0.0.0.0"
+    port = int(os.environ.get("PORT", 5000))
 
     print("=" * 50)
     print("✅ Website Berhasil Dijalankan")
-    print(f"🌐 Akses di: http://{host}:{port}/")
+    print(f"🌐 Server running on: {host}:{port}")
     print("=" * 50)
 
-    app.run(debug=True, host=host, port=port)
+    app.run(host=host, port=port)
